@@ -692,7 +692,11 @@ async function push() {
   if (!S.url) return;
   dot('busy', 'saving…');
   try {
-    var r = await fetch(S.url + '?action=save&page=' + enc(S.page) + '&todos=' + enc(JSON.stringify(todos())));
+    var r = await fetch(S.url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'save', page: S.page, todos: todos() })
+    });
     var d = await r.json();
     dot(d.ok ? 'ok' : 'err', d.ok ? 'synced' : 'error');
   } catch(e) { dot('err', 'offline'); }
