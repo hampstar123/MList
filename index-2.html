@@ -5,432 +5,704 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MList</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%93</text></svg>" />
-
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-
-  <!-- React + Babel from CDN -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
   <style>
-    body { margin: 0; font-family: 'Inter', sans-serif; background: #f5f5f4; }
-    .mono { font-family: 'JetBrains Mono', monospace; }
-    .sans { font-family: 'Inter', sans-serif; }
+    /* ---------- Reset / Base ---------- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #f5f5f4; font-family: 'Inter', sans-serif; color: #1c1917; min-height: 100vh; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    input, textarea { font-family: inherit; }
+
+    /* ---------- Typography ---------- */
     .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em; }
+    .sans { font-family: 'Inter', sans-serif; }
+
+    /* ---------- Layout ---------- */
+    .container { max-width: 42rem; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+    /* ---------- Header ---------- */
+    header {
+      border-bottom: 2px solid #1c1917;
+      padding-bottom: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .stats-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.875rem;
+      letter-spacing: 0.1em;
+      color: #78716c;
+      margin-bottom: 0.5rem;
+    }
+    h1.title {
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 0.04em;
+      font-size: 4rem;
+      color: #1c1917;
+      line-height: 1;
+      font-weight: 400;
+    }
+    @media (min-width: 768px) {
+      h1.title { font-size: 5rem; }
+    }
+    .header-buttons { display: flex; gap: 0.5rem; }
+
+    /* ---------- Buttons ---------- */
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid #a8a29e;
+      color: #44403c;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.875rem;
+      letter-spacing: 0.1em;
+      transition: all 0.15s;
+    }
+    .btn-outline:hover {
+      background: #1c1917;
+      color: #f5f5f4;
+      border-color: #1c1917;
+    }
+    .btn-solid {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      background: #1c1917;
+      color: #f5f5f4;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.875rem;
+      letter-spacing: 0.1em;
+      transition: background 0.15s;
+    }
+    .btn-solid:hover { background: #292524; }
+    .btn-solid:disabled {
+      background: #d6d3d1;
+      cursor: not-allowed;
+    }
+
+    /* ---------- Input section ---------- */
+    .new-section { margin-bottom: 2rem; }
+    .new-label-row {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .new-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.875rem;
+      color: #a8a29e;
+      letter-spacing: 0.1em;
+    }
+    .new-prompt {
+      font-size: 1rem;
+      color: #1c1917;
+      font-weight: 500;
+    }
+    .new-input-row {
+      margin-left: 3rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .new-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid #d6d3d1;
+      background: #ffffff;
+      color: #1c1917;
+      font-size: 0.875rem;
+      transition: border-color 0.15s;
+    }
+    .new-input:focus {
+      outline: none;
+      border-color: #1c1917;
+    }
+    .new-input::placeholder { color: #a8a29e; }
+
+    /* ---------- Filter tabs ---------- */
+    .tabs {
+      display: flex;
+      gap: 0.25rem;
+      border-bottom: 1px solid #d6d3d1;
+      margin-bottom: 1.5rem;
+    }
+    .tab {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.875rem;
+      letter-spacing: 0.1em;
+      padding: 0.5rem 1rem;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      color: #a8a29e;
+      transition: color 0.15s;
+    }
+    .tab:hover { color: #44403c; }
+    .tab.active {
+      border-bottom-color: #1c1917;
+      color: #1c1917;
+    }
+    .tab-count { color: #a8a29e; }
+
+    /* ---------- Empty state ---------- */
+    .empty {
+      background: #ffffff;
+      border-left: 4px solid #d6d3d1;
+      padding: 2rem;
+      text-align: center;
+      color: #78716c;
+      font-weight: 300;
+    }
+
+    /* ---------- Todo cards ---------- */
+    .todo-list { list-style: none; }
+    .todo-card {
+      background: #ffffff;
+      border-left: 6px solid #d6d3d1;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      margin-bottom: 0.75rem;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .todo-inner { padding: 1.25rem; }
+    .todo-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .todo-index {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.875rem;
+      color: #a8a29e;
+      letter-spacing: 0.1em;
+      flex-shrink: 0;
+      margin-top: 0.375rem;
+    }
+    .todo-title {
+      font-size: 1.125rem;
+      font-weight: 500;
+      line-height: 1.375;
+      flex: 1;
+      word-break: break-word;
+      color: #1c1917;
+    }
+    .todo-card.done .todo-title {
+      color: #a8a29e;
+      text-decoration: line-through;
+    }
+    .todo-delete {
+      opacity: 0;
+      color: #a8a29e;
+      flex-shrink: 0;
+      margin-top: 0.25rem;
+      transition: all 0.15s;
+    }
+    .todo-card:hover .todo-delete { opacity: 1; }
+    .todo-delete:hover { color: #be123c; }
+
+    /* ---------- Toggle switch ---------- */
+    .toggle {
+      flex-shrink: 0;
+      position: relative;
+      width: 2.75rem;
+      height: 1.5rem;
+      border-radius: 999px;
+      background: #22c55e;
+      transition: background 0.2s;
+      margin-top: 0.25rem;
+    }
+    .toggle.on { background: #3b82f6; }
+    .toggle-knob {
+      position: absolute;
+      top: 0.125rem;
+      left: 0.125rem;
+      width: 1.25rem;
+      height: 1.25rem;
+      background: #ffffff;
+      border-radius: 999px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: left 0.2s;
+    }
+    .toggle.on .toggle-knob { left: calc(100% - 1.375rem); }
+
+    /* ---------- Notes textarea ---------- */
+    .notes-wrap { margin-left: 4.5rem; }
+    .notes {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      background: #fafaf9;
+      border: 1px solid #e7e5e4;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #44403c;
+      resize: none;
+      transition: all 0.15s;
+    }
+    .notes:focus {
+      outline: none;
+      border-color: #78716c;
+      background: #ffffff;
+    }
+    .notes::placeholder { color: #a8a29e; }
+    .notes:disabled {
+      color: #a8a29e;
+      font-style: italic;
+    }
+    .notes-counter {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: #a8a29e;
+      margin-top: 0.25rem;
+      text-align: right;
+    }
+
+    /* ---------- Progress bar ---------- */
+    .progress-section {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #d6d3d1;
+    }
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .progress-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.875rem;
+      letter-spacing: 0.1em;
+      color: #78716c;
+    }
+    .progress-pct {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.875rem;
+      letter-spacing: 0.1em;
+      color: #44403c;
+    }
+    .progress-track {
+      height: 1px;
+      background: #e7e5e4;
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      background: #1c1917;
+      transition: width 0.3s;
+    }
+
+    /* ---------- Footer ---------- */
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #d6d3d1;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: #78716c;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* ---------- Utility ---------- */
+    .hidden { display: none !important; }
     .icon { display: inline-block; vertical-align: middle; }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="header-row">
+        <div>
+          <div class="stats-label"><span id="done-count">0</span> COMPLETE</div>
+          <h1 class="title">MLIST</h1>
+        </div>
+        <div class="header-buttons">
+          <button id="shuffle-btn" class="btn-outline hidden">
+            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/>
+            </svg>
+            SHUFFLE
+          </button>
+          <button id="clear-btn" class="btn-outline hidden">
+            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+            </svg>
+            CLEAR COMPLETE
+          </button>
+        </div>
+      </div>
+    </header>
 
-  <script type="text/babel">
-    const { useState, useMemo, useEffect, Fragment } = React;
-    const e = React.createElement;
-
-    // ---------- Icon helper (Lucide-style) ----------
-    function makeIcon(paths) {
-      return function (props) {
-        const size = props.size || 16;
-        const stroke = props.stroke || 'currentColor';
-        const strokeWidth = props.strokeWidth || 2;
-        return (
-          <svg
-            className="icon"
-            width={size}
-            height={size}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke={stroke}
-            strokeWidth={strokeWidth}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            {paths}
+    <!-- New task input -->
+    <div class="new-section">
+      <div class="new-label-row">
+        <div class="new-label">NEW</div>
+        <div class="new-prompt">What needs doing?</div>
+      </div>
+      <div class="new-input-row">
+        <input id="new-input" class="new-input" type="text" placeholder="Type a task and press Enter…" />
+        <button id="add-btn" class="btn-solid" disabled>
+          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
-        );
-      };
-    }
+          ADD
+        </button>
+      </div>
+    </div>
 
-    const Plus = makeIcon(
-      <Fragment>
-        <line x1="12" y1="5" x2="12" y2="19" />
-        <line x1="5" y1="12" x2="19" y2="12" />
-      </Fragment>
-    );
+    <!-- Filter tabs -->
+    <div id="tabs" class="tabs hidden">
+      <button class="tab active" data-filter="all">ALL <span class="tab-count" id="tab-all-count">·0</span></button>
+      <button class="tab" data-filter="done">COMPLETE <span class="tab-count" id="tab-done-count">·0</span></button>
+    </div>
 
-    const Check = makeIcon(
-      <polyline points="20 6 9 17 4 12" />
-    );
+    <!-- List or empty state -->
+    <ul id="todo-list" class="todo-list"></ul>
+    <div id="empty-state" class="empty">Nothing here yet. Start by adding a task above.</div>
 
-    const Trash2 = makeIcon(
-      <Fragment>
-        <polyline points="3 6 5 6 21 6" />
-        <path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6" />
-        <line x1="10" y1="11" x2="10" y2="17" />
-        <line x1="14" y1="11" x2="14" y2="17" />
-        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-      </Fragment>
-    );
+    <!-- Progress -->
+    <div id="progress-section" class="progress-section hidden">
+      <div class="progress-row">
+        <div class="progress-label">PROGRESS</div>
+        <div class="progress-pct"><span id="progress-pct">0</span>%</div>
+      </div>
+      <div class="progress-track">
+        <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+      </div>
+    </div>
 
-    const RotateCcw = makeIcon(
-      <Fragment>
-        <polyline points="1 4 1 10 7 10" />
-        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-      </Fragment>
-    );
+    <!-- Footer -->
+    <footer>
+      <span>MLIST</span>
+      <span>V2.0</span>
+    </footer>
+  </div>
 
-    const Shuffle = makeIcon(
-      <Fragment>
-        <polyline points="16 3 21 3 21 8" />
-        <line x1="4" y1="20" x2="21" y2="3" />
-        <polyline points="21 16 21 21 16 21" />
-        <line x1="15" y1="15" x2="21" y2="21" />
-        <line x1="4" y1="4" x2="9" y2="9" />
-      </Fragment>
-    );
+  <script>
+    'use strict';
 
     // ---------- Palette ----------
-    const ACCENTS = [
+    var ACCENTS = [
       '#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e',
       '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6',
       '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899',
       '#f43f5e', '#f59e0b', '#34d399', '#fb7185'
     ];
-
     function randomAccent() {
       return ACCENTS[Math.floor(Math.random() * ACCENTS.length)];
     }
 
-    const STORAGE_KEY = 'mlist_v1';
+    var STORAGE_KEY = 'mlist_v1';
+    var MAX_NOTES = 200;
 
-    function App() {
-      const [todos, setTodos] = useState([]);
-      const [input, setInput] = useState('');
-      const [filter, setFilter] = useState('all');
-      const [loaded, setLoaded] = useState(false);
+    // ---------- State ----------
+    var todos = [];
+    var filter = 'all';
 
-      // Load from localStorage
-      useEffect(function () {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            const migrated = parsed.map(function (t) {
-              return Object.assign({}, t, {
-                color: ACCENTS.indexOf(t.color) >= 0 ? t.color : randomAccent()
-              });
-            });
-            setTodos(migrated);
+    // ---------- Persistence ----------
+    function load() {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          todos = parsed.map(function (t) {
+            if (ACCENTS.indexOf(t.color) < 0) t.color = randomAccent();
+            return t;
+          });
+        }
+      } catch (err) {
+        console.error('Load failed:', err);
+      }
+    }
+    function save() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+      } catch (err) {
+        console.error('Save failed:', err);
+      }
+    }
+
+    // ---------- Actions ----------
+    function addTodo() {
+      var input = document.getElementById('new-input');
+      var text = input.value.trim();
+      if (!text) return;
+      todos.push({
+        id: Date.now(),
+        text: text,
+        notes: '',
+        done: false,
+        color: randomAccent()
+      });
+      input.value = '';
+      save();
+      render();
+    }
+    function toggle(id) {
+      todos = todos.map(function (t) {
+        return t.id === id ? Object.assign({}, t, { done: !t.done }) : t;
+      });
+      save();
+      render();
+    }
+    function updateNotes(id, notes) {
+      todos = todos.map(function (t) {
+        return t.id === id ? Object.assign({}, t, { notes: notes }) : t;
+      });
+      save();
+      // Don't re-render entire list during typing — just update counter
+      var counter = document.getElementById('counter-' + id);
+      if (counter) {
+        if (notes && notes.length > 0) {
+          counter.textContent = notes.length + ' / ' + MAX_NOTES;
+          counter.style.display = '';
+        } else {
+          counter.style.display = 'none';
+        }
+      }
+    }
+    function remove(id) {
+      todos = todos.filter(function (t) { return t.id !== id; });
+      save();
+      render();
+    }
+    function clearDone() {
+      todos = todos.filter(function (t) { return !t.done; });
+      save();
+      render();
+    }
+    function reshuffleColors() {
+      todos = todos.map(function (t) {
+        return Object.assign({}, t, { color: randomAccent() });
+      });
+      save();
+      render();
+    }
+
+    // ---------- DOM helpers ----------
+    function el(tag, attrs, children) {
+      var node = document.createElement(tag);
+      if (attrs) {
+        for (var k in attrs) {
+          if (k === 'style' && typeof attrs[k] === 'object') {
+            for (var sk in attrs[k]) node.style[sk] = attrs[k][sk];
+          } else if (k === 'className') {
+            node.className = attrs[k];
+          } else if (k.indexOf('on') === 0 && typeof attrs[k] === 'function') {
+            node.addEventListener(k.substring(2).toLowerCase(), attrs[k]);
+          } else if (k === 'disabled' && attrs[k]) {
+            node.disabled = true;
+          } else if (attrs[k] !== undefined && attrs[k] !== null && attrs[k] !== false) {
+            node.setAttribute(k, attrs[k]);
           }
-        } catch (err) {
-          console.error('Load failed:', err);
         }
-        setLoaded(true);
-      }, []);
+      }
+      if (children) {
+        if (!Array.isArray(children)) children = [children];
+        children.forEach(function (c) {
+          if (c == null) return;
+          if (typeof c === 'string' || typeof c === 'number') {
+            node.appendChild(document.createTextNode(String(c)));
+          } else {
+            node.appendChild(c);
+          }
+        });
+      }
+      return node;
+    }
 
-      // Save to localStorage
-      useEffect(function () {
-        if (!loaded) return;
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-        } catch (err) {
-          console.error('Save failed:', err);
+    function trashIcon() {
+      var ns = 'http://www.w3.org/2000/svg';
+      var svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('class', 'icon');
+      svg.setAttribute('width', '16');
+      svg.setAttribute('height', '16');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      svg.innerHTML = '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>';
+      return svg;
+    }
+
+    // ---------- Card builder ----------
+    function buildCard(todo, index) {
+      var card = document.createElement('li');
+      card.className = 'todo-card' + (todo.done ? ' done' : '');
+      card.style.borderLeftColor = todo.done ? '#d6d3d1' : todo.color;
+
+      var inner = document.createElement('div');
+      inner.className = 'todo-inner';
+
+      // Title row
+      var row = document.createElement('div');
+      row.className = 'todo-row';
+
+      // Toggle switch
+      var toggleBtn = document.createElement('button');
+      toggleBtn.className = 'toggle' + (todo.done ? ' on' : '');
+      toggleBtn.setAttribute('role', 'switch');
+      toggleBtn.setAttribute('aria-checked', String(todo.done));
+      toggleBtn.setAttribute('aria-label', todo.done ? 'Mark incomplete' : 'Mark complete');
+      toggleBtn.addEventListener('click', function () { toggle(todo.id); });
+      var knob = document.createElement('span');
+      knob.className = 'toggle-knob';
+      toggleBtn.appendChild(knob);
+      row.appendChild(toggleBtn);
+
+      // Index
+      var idx = document.createElement('div');
+      idx.className = 'todo-index';
+      idx.textContent = String(index + 1).padStart(2, '0');
+      row.appendChild(idx);
+
+      // Title
+      var title = document.createElement('h3');
+      title.className = 'todo-title';
+      title.textContent = todo.text;
+      row.appendChild(title);
+
+      // Delete
+      var del = document.createElement('button');
+      del.className = 'todo-delete';
+      del.setAttribute('aria-label', 'Delete task');
+      del.appendChild(trashIcon());
+      del.addEventListener('click', function () { remove(todo.id); });
+      row.appendChild(del);
+
+      inner.appendChild(row);
+
+      // Notes
+      var notesWrap = document.createElement('div');
+      notesWrap.className = 'notes-wrap';
+
+      var textarea = document.createElement('textarea');
+      textarea.className = 'notes';
+      textarea.placeholder = 'Add a brief note…';
+      textarea.rows = 2;
+      textarea.value = todo.notes || '';
+      if (todo.done) textarea.disabled = true;
+      textarea.addEventListener('input', function (ev) {
+        if (ev.target.value.length > MAX_NOTES) {
+          ev.target.value = ev.target.value.substring(0, MAX_NOTES);
         }
-      }, [todos, loaded]);
+        updateNotes(todo.id, ev.target.value);
+      });
+      notesWrap.appendChild(textarea);
 
-      function addTodo() {
-        const text = input.trim();
-        if (!text) return;
-        setTodos(function (prev) {
-          return prev.concat([{
-            id: Date.now(),
-            text: text,
-            notes: '',
-            done: false,
-            color: randomAccent()
-          }]);
+      var counter = document.createElement('div');
+      counter.id = 'counter-' + todo.id;
+      counter.className = 'notes-counter';
+      if (todo.notes && todo.notes.length > 0) {
+        counter.textContent = todo.notes.length + ' / ' + MAX_NOTES;
+      } else {
+        counter.style.display = 'none';
+      }
+      notesWrap.appendChild(counter);
+
+      inner.appendChild(notesWrap);
+      card.appendChild(inner);
+      return card;
+    }
+
+    // ---------- Render ----------
+    function render() {
+      var doneCount = todos.filter(function (t) { return t.done; }).length;
+      var total = todos.length;
+
+      // Header counts
+      document.getElementById('done-count').textContent = doneCount;
+
+      // Header buttons
+      document.getElementById('shuffle-btn').classList.toggle('hidden', total <= 1);
+      document.getElementById('clear-btn').classList.toggle('hidden', doneCount === 0);
+
+      // Tabs
+      var tabsEl = document.getElementById('tabs');
+      tabsEl.classList.toggle('hidden', total === 0);
+      document.getElementById('tab-all-count').textContent = '·' + total;
+      document.getElementById('tab-done-count').textContent = '·' + doneCount;
+      var tabs = tabsEl.querySelectorAll('.tab');
+      tabs.forEach(function (tab) {
+        tab.classList.toggle('active', tab.getAttribute('data-filter') === filter);
+      });
+
+      // Filter
+      var visible = filter === 'done' ? todos.filter(function (t) { return t.done; }) : todos;
+
+      // Empty state
+      var listEl = document.getElementById('todo-list');
+      var emptyEl = document.getElementById('empty-state');
+      listEl.innerHTML = '';
+
+      if (visible.length === 0) {
+        emptyEl.classList.remove('hidden');
+        emptyEl.textContent = total === 0 ? 'Nothing here yet. Start by adding a task above.' : 'Nothing complete yet.';
+        listEl.classList.add('hidden');
+      } else {
+        emptyEl.classList.add('hidden');
+        listEl.classList.remove('hidden');
+        visible.forEach(function (todo, i) {
+          listEl.appendChild(buildCard(todo, i));
         });
-        setInput('');
       }
 
-      function toggle(id) {
-        setTodos(function (prev) {
-          return prev.map(function (t) {
-            return t.id === id ? Object.assign({}, t, { done: !t.done }) : t;
-          });
-        });
-      }
+      // Progress
+      var progressEl = document.getElementById('progress-section');
+      progressEl.classList.toggle('hidden', total === 0);
+      var pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+      document.getElementById('progress-pct').textContent = pct;
+      document.getElementById('progress-fill').style.width = pct + '%';
+    }
 
-      function updateNotes(id, notes) {
-        setTodos(function (prev) {
-          return prev.map(function (t) {
-            return t.id === id ? Object.assign({}, t, { notes: notes }) : t;
-          });
-        });
-      }
+    // ---------- Wire up ----------
+    document.addEventListener('DOMContentLoaded', function () {
+      load();
+      render();
 
-      function remove(id) {
-        setTodos(function (prev) {
-          return prev.filter(function (t) { return t.id !== id; });
-        });
-      }
+      var newInput = document.getElementById('new-input');
+      var addBtn = document.getElementById('add-btn');
 
-      function clearDone() {
-        setTodos(function (prev) {
-          return prev.filter(function (t) { return !t.done; });
-        });
-      }
-
-      function reshuffleColors() {
-        setTodos(function (prev) {
-          return prev.map(function (t) {
-            return Object.assign({}, t, { color: randomAccent() });
-          });
-        });
-      }
-
-      function handleKey(ev) {
+      newInput.addEventListener('input', function () {
+        addBtn.disabled = !newInput.value.trim();
+      });
+      newInput.addEventListener('keydown', function (ev) {
         if (ev.key === 'Enter') addTodo();
-      }
+      });
+      addBtn.addEventListener('click', addTodo);
 
-      const filtered = useMemo(function () {
-        if (filter === 'done') return todos.filter(function (t) { return t.done; });
-        return todos;
-      }, [todos, filter]);
+      document.getElementById('shuffle-btn').addEventListener('click', reshuffleColors);
+      document.getElementById('clear-btn').addEventListener('click', clearDone);
 
-      const stats = useMemo(function () {
-        const done = todos.filter(function (t) { return t.done; }).length;
-        return {
-          total: todos.length,
-          done: done,
-          active: todos.length - done
-        };
-      }, [todos]);
-
-      const progressPct = stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
-
-      return (
-        <div className="min-h-screen bg-stone-100">
-          <div className="max-w-2xl mx-auto px-6 py-10">
-
-            {/* Header */}
-            <header className="border-b-2 border-stone-900 pb-6 mb-10">
-              <div className="flex items-start justify-between gap-6 flex-wrap">
-                <div>
-                  <div className="display text-sm tracking-widest text-stone-500 mb-2">
-                    {stats.done} COMPLETE
-                  </div>
-                  <h1 className="display text-6xl md:text-7xl text-stone-900 leading-none">
-                    MLIST
-                  </h1>
-                </div>
-                <div className="flex gap-2">
-                  {todos.length > 1 && (
-                    <button
-                      onClick={reshuffleColors}
-                      className="display flex items-center gap-2 px-4 py-2 border border-stone-400 text-stone-700 hover:bg-stone-900 hover:text-stone-100 hover:border-stone-900 transition-colors text-sm tracking-wider"
-                    >
-                      <Shuffle size={14} /> SHUFFLE
-                    </button>
-                  )}
-                  {stats.done > 0 && (
-                    <button
-                      onClick={clearDone}
-                      className="display flex items-center gap-2 px-4 py-2 border border-stone-400 text-stone-700 hover:bg-stone-900 hover:text-stone-100 hover:border-stone-900 transition-colors text-sm tracking-wider"
-                    >
-                      <RotateCcw size={14} /> CLEAR COMPLETE
-                    </button>
-                  )}
-                </div>
-              </div>
-            </header>
-
-            {/* Input */}
-            <div className="mb-8">
-              <div className="flex items-baseline gap-4 mb-3">
-                <div className="display text-sm text-stone-400 tracking-widest">NEW</div>
-                <div className="sans text-base text-stone-900 font-medium">What needs doing?</div>
-              </div>
-              <div className="ml-12 flex gap-2">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={function (ev) { setInput(ev.target.value); }}
-                  onKeyDown={handleKey}
-                  placeholder="Type a task and press Enter…"
-                  className="sans flex-1 px-4 py-3 border border-stone-300 bg-white text-stone-900 text-sm placeholder:text-stone-400 focus:outline-none focus:border-stone-900 transition-colors"
-                />
-                <button
-                  onClick={addTodo}
-                  disabled={!input.trim()}
-                  className="display flex items-center gap-2 px-5 py-3 bg-stone-900 text-stone-100 hover:bg-stone-800 transition-colors text-sm tracking-wider disabled:bg-stone-300 disabled:cursor-not-allowed"
-                >
-                  <Plus size={16} /> ADD
-                </button>
-              </div>
-            </div>
-
-            {/* Filter tabs */}
-            {todos.length > 0 && (
-              <div className="mb-6 flex gap-1 border-b border-stone-300">
-                {[
-                  { v: 'all', l: 'ALL', n: stats.total },
-                  { v: 'done', l: 'COMPLETE', n: stats.done }
-                ].map(function (tab) {
-                  const isActive = filter === tab.v;
-                  return (
-                    <button
-                      key={tab.v}
-                      onClick={function () { setFilter(tab.v); }}
-                      className={'display text-sm tracking-widest px-4 py-2 border-b-2 -mb-px transition-colors ' + (isActive ? 'border-stone-900 text-stone-900' : 'border-transparent text-stone-400 hover:text-stone-700')}
-                    >
-                      {tab.l} <span className="text-stone-400">·{tab.n}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* List */}
-            {filtered.length === 0 ? (
-              <div className="bg-white border-l-4 border-stone-300 p-8 text-center">
-                <div className="sans text-stone-500 text-base font-light">
-                  {todos.length === 0 ? 'Nothing here yet. Start by adding a task above.' : 'Nothing complete yet.'}
-                </div>
-              </div>
-            ) : (
-              <ul className="space-y-3 list-none p-0">
-                {filtered.map(function (todo, i) {
-                  return (
-                    <TodoCard
-                      key={todo.id}
-                      todo={todo}
-                      index={i}
-                      onToggle={function () { toggle(todo.id); }}
-                      onRemove={function () { remove(todo.id); }}
-                      onUpdateNotes={function (notes) { updateNotes(todo.id, notes); }}
-                    />
-                  );
-                })}
-              </ul>
-            )}
-
-            {/* Progress */}
-            {todos.length > 0 && (
-              <div className="mt-10 pt-6 border-t border-stone-300">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="display text-sm tracking-widest text-stone-500">PROGRESS</div>
-                  <div className="display text-sm tracking-widest text-stone-700">{progressPct}%</div>
-                </div>
-                <div className="h-px bg-stone-200 relative overflow-hidden">
-                  <div
-                    className="absolute inset-y-0 left-0 bg-stone-900 transition-all duration-300"
-                    style={{ width: progressPct + '%' }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Footer */}
-            <footer className="mt-12 pt-6 border-t border-stone-300 display text-xs tracking-widest text-stone-500 flex justify-between">
-              <span>MLIST</span>
-              <span>V1.6</span>
-            </footer>
-
-          </div>
-        </div>
-      );
-    }
-
-    function TodoCard(props) {
-      const todo = props.todo;
-      const index = props.index;
-      const onToggle = props.onToggle;
-      const onRemove = props.onRemove;
-      const onUpdateNotes = props.onUpdateNotes;
-
-      const accentColor = todo.color || ACCENTS[0];
-      const MAX_NOTES = 200;
-
-      return (
-        <li
-          className="group bg-white relative overflow-hidden transition-all shadow-sm"
-          style={{ borderLeft: '6px solid ' + (todo.done ? '#d6d3d1' : accentColor) }}
-        >
-          <div className="p-5">
-
-            {/* Title row */}
-            <div className="flex items-start gap-3 mb-2">
-              {/* Toggle switch */}
-              <button
-                onClick={onToggle}
-                role="switch"
-                aria-checked={todo.done}
-                aria-label={todo.done ? 'Mark incomplete' : 'Mark complete'}
-                className="mt-1 flex-shrink-0 relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none"
-                style={{ background: todo.done ? '#3b82f6' : '#22c55e' }}
-              >
-                <span
-                  className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200"
-                  style={{ left: todo.done ? 'calc(100% - 22px)' : '2px' }}
-                />
-              </button>
-
-              <div className="display text-sm text-stone-400 tracking-widest flex-shrink-0 mt-1.5">
-                {String(index + 1).padStart(2, '0')}
-              </div>
-
-              <h3
-                className={'sans text-lg font-medium leading-snug flex-1 break-words ' + (todo.done ? 'text-stone-400 line-through' : 'text-stone-900')}
-                style={{ margin: 0 }}
-              >
-                {todo.text}
-              </h3>
-
-              <button
-                onClick={onRemove}
-                className="opacity-0 group-hover:opacity-100 text-stone-400 hover:text-rose-700 transition-all flex-shrink-0 mt-1"
-                aria-label="Delete task"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-
-            {/* Notes area */}
-            <div style={{ marginLeft: '72px' }}>
-              <textarea
-                value={todo.notes || ''}
-                onChange={function (ev) {
-                  if (ev.target.value.length <= MAX_NOTES) {
-                    onUpdateNotes(ev.target.value);
-                  }
-                }}
-                placeholder="Add a brief note…"
-                rows={2}
-                disabled={todo.done}
-                className={'sans w-full px-3 py-2 bg-stone-50 border border-stone-200 text-sm leading-relaxed placeholder:text-stone-400 focus:outline-none focus:border-stone-500 focus:bg-white transition-colors resize-none ' + (todo.done ? 'text-stone-400 italic' : 'text-stone-700')}
-              />
-              {todo.notes && todo.notes.length > 0 && (
-                <div className="display text-xs tracking-widest text-stone-400 mt-1 text-right">
-                  {todo.notes.length} / {MAX_NOTES}
-                </div>
-              )}
-            </div>
-
-          </div>
-        </li>
-      );
-    }
-
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+      var tabs = document.querySelectorAll('.tab');
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          filter = tab.getAttribute('data-filter');
+          render();
+        });
+      });
+    });
   </script>
 </body>
 </html>
