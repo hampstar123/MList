@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MList</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✓</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%93</text></svg>" />
 
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -15,8 +15,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
   <!-- React + Babel from CDN -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
@@ -24,39 +24,91 @@
     .mono { font-family: 'JetBrains Mono', monospace; }
     .sans { font-family: 'Inter', sans-serif; }
     .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em; }
-    /* SVG icon helpers (Lucide-style) */
     .icon { display: inline-block; vertical-align: middle; }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
-  <script type="text/babel" data-presets="react">
-    const { useState, useMemo, useEffect } = React;
+  <script type="text/babel">
+    const { useState, useMemo, useEffect, Fragment } = React;
+    const e = React.createElement;
 
-    // ---------- Inline SVG icons (Lucide-style) ----------
-    const Icon = ({ d, size = 16, stroke = 'currentColor', strokeWidth = 2, fill = 'none' }) => (
-      <svg className="icon" width={size} height={size} viewBox="0 0 24 24" fill={fill}
-           stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
-        {d}
-      </svg>
+    // ---------- Icon helper (Lucide-style) ----------
+    function makeIcon(paths) {
+      return function (props) {
+        const size = props.size || 16;
+        const stroke = props.stroke || 'currentColor';
+        const strokeWidth = props.strokeWidth || 2;
+        return (
+          <svg
+            className="icon"
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            {paths}
+          </svg>
+        );
+      };
+    }
+
+    const Plus = makeIcon(
+      <Fragment>
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </Fragment>
     );
-    const Plus = (p) => <Icon {...p} d={<><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>} />;
-    const Check = (p) => <Icon {...p} d={<polyline points="20 6 9 17 4 12"/>} />;
-    const Trash2 = (p) => <Icon {...p} d={<><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></>} />;
-    const RotateCcw = (p) => <Icon {...p} d={<><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></>} />;
-    const Shuffle = (p) => <Icon {...p} d={<><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></>} />;
+
+    const Check = makeIcon(
+      <polyline points="20 6 9 17 4 12" />
+    );
+
+    const Trash2 = makeIcon(
+      <Fragment>
+        <polyline points="3 6 5 6 21 6" />
+        <path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6" />
+        <line x1="10" y1="11" x2="10" y2="17" />
+        <line x1="14" y1="11" x2="14" y2="17" />
+        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+      </Fragment>
+    );
+
+    const RotateCcw = makeIcon(
+      <Fragment>
+        <polyline points="1 4 1 10 7 10" />
+        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+      </Fragment>
+    );
+
+    const Shuffle = makeIcon(
+      <Fragment>
+        <polyline points="16 3 21 3 21 8" />
+        <line x1="4" y1="20" x2="21" y2="3" />
+        <polyline points="21 16 21 21 16 21" />
+        <line x1="15" y1="15" x2="21" y2="21" />
+        <line x1="4" y1="4" x2="9" y2="9" />
+      </Fragment>
+    );
 
     // ---------- Palette ----------
     const ACCENTS = [
       '#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e',
       '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6',
       '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899',
-      '#f43f5e', '#f59e0b', '#34d399', '#fb7185',
+      '#f43f5e', '#f59e0b', '#34d399', '#fb7185'
     ];
-    const randomAccent = () => ACCENTS[Math.floor(Math.random() * ACCENTS.length)];
 
-    const STORAGE_KEY = 'todo_list_v1';
+    function randomAccent() {
+      return ACCENTS[Math.floor(Math.random() * ACCENTS.length)];
+    }
+
+    const STORAGE_KEY = 'mlist_v1';
 
     function App() {
       const [todos, setTodos] = useState([]);
@@ -64,65 +116,110 @@
       const [filter, setFilter] = useState('all');
       const [loaded, setLoaded] = useState(false);
 
-      // Load
-      useEffect(() => {
+      // Load from localStorage
+      useEffect(function () {
         try {
           const raw = localStorage.getItem(STORAGE_KEY);
           if (raw) {
             const parsed = JSON.parse(raw);
-            const migrated = parsed.map(t => ({
-              ...t,
-              color: ACCENTS.includes(t.color) ? t.color : randomAccent(),
-            }));
+            const migrated = parsed.map(function (t) {
+              return Object.assign({}, t, {
+                color: ACCENTS.indexOf(t.color) >= 0 ? t.color : randomAccent()
+              });
+            });
             setTodos(migrated);
           }
-        } catch (e) {
-          console.error('Load failed:', e);
+        } catch (err) {
+          console.error('Load failed:', err);
         }
         setLoaded(true);
       }, []);
 
-      // Persist
-      useEffect(() => {
+      // Save to localStorage
+      useEffect(function () {
         if (!loaded) return;
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-        } catch (e) {
-          console.error('Save failed:', e);
+        } catch (err) {
+          console.error('Save failed:', err);
         }
       }, [todos, loaded]);
 
-      const addTodo = () => {
+      function addTodo() {
         const text = input.trim();
         if (!text) return;
-        setTodos(prev => [
-          ...prev,
-          { id: Date.now(), text, notes: '', done: false, color: randomAccent() }
-        ]);
+        setTodos(function (prev) {
+          return prev.concat([{
+            id: Date.now(),
+            text: text,
+            notes: '',
+            done: false,
+            color: randomAccent()
+          }]);
+        });
         setInput('');
-      };
+      }
 
-      const toggle = (id) => setTodos(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t));
-      const updateNotes = (id, notes) => setTodos(prev => prev.map(t => t.id === id ? { ...t, notes } : t));
-      const remove = (id) => setTodos(prev => prev.filter(t => t.id !== id));
-      const clearDone = () => setTodos(prev => prev.filter(t => !t.done));
-      const reshuffleColors = () => setTodos(prev => prev.map(t => ({ ...t, color: randomAccent() })));
-      const handleKey = (e) => { if (e.key === 'Enter') addTodo(); };
+      function toggle(id) {
+        setTodos(function (prev) {
+          return prev.map(function (t) {
+            return t.id === id ? Object.assign({}, t, { done: !t.done }) : t;
+          });
+        });
+      }
 
-      const filtered = useMemo(() => {
-        if (filter === 'done') return todos.filter(t => t.done);
+      function updateNotes(id, notes) {
+        setTodos(function (prev) {
+          return prev.map(function (t) {
+            return t.id === id ? Object.assign({}, t, { notes: notes }) : t;
+          });
+        });
+      }
+
+      function remove(id) {
+        setTodos(function (prev) {
+          return prev.filter(function (t) { return t.id !== id; });
+        });
+      }
+
+      function clearDone() {
+        setTodos(function (prev) {
+          return prev.filter(function (t) { return !t.done; });
+        });
+      }
+
+      function reshuffleColors() {
+        setTodos(function (prev) {
+          return prev.map(function (t) {
+            return Object.assign({}, t, { color: randomAccent() });
+          });
+        });
+      }
+
+      function handleKey(ev) {
+        if (ev.key === 'Enter') addTodo();
+      }
+
+      const filtered = useMemo(function () {
+        if (filter === 'done') return todos.filter(function (t) { return t.done; });
         return todos;
       }, [todos, filter]);
 
-      const stats = useMemo(() => ({
-        total: todos.length,
-        done: todos.filter(t => t.done).length,
-        active: todos.filter(t => !t.done).length,
-      }), [todos]);
+      const stats = useMemo(function () {
+        const done = todos.filter(function (t) { return t.done; }).length;
+        return {
+          total: todos.length,
+          done: done,
+          active: todos.length - done
+        };
+      }, [todos]);
+
+      const progressPct = stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
 
       return (
         <div className="min-h-screen bg-stone-100">
           <div className="max-w-2xl mx-auto px-6 py-10">
+
             {/* Header */}
             <header className="border-b-2 border-stone-900 pb-6 mb-10">
               <div className="flex items-start justify-between gap-6 flex-wrap">
@@ -165,7 +262,7 @@
                 <input
                   type="text"
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={function (ev) { setInput(ev.target.value); }}
                   onKeyDown={handleKey}
                   placeholder="Type a task and press Enter…"
                   className="sans flex-1 px-4 py-3 border border-stone-300 bg-white text-stone-900 text-sm placeholder:text-stone-400 focus:outline-none focus:border-stone-900 transition-colors"
@@ -185,20 +282,19 @@
               <div className="mb-6 flex gap-1 border-b border-stone-300">
                 {[
                   { v: 'all', l: 'ALL', n: stats.total },
-                  { v: 'done', l: 'COMPLETE', n: stats.done },
-                ].map(tab => (
-                  <button
-                    key={tab.v}
-                    onClick={() => setFilter(tab.v)}
-                    className={`display text-sm tracking-widest px-4 py-2 border-b-2 -mb-px transition-colors ${
-                      filter === tab.v
-                        ? 'border-stone-900 text-stone-900'
-                        : 'border-transparent text-stone-400 hover:text-stone-700'
-                    }`}
-                  >
-                    {tab.l} <span className="text-stone-400">·{tab.n}</span>
-                  </button>
-                ))}
+                  { v: 'done', l: 'COMPLETE', n: stats.done }
+                ].map(function (tab) {
+                  const isActive = filter === tab.v;
+                  return (
+                    <button
+                      key={tab.v}
+                      onClick={function () { setFilter(tab.v); }}
+                      className={'display text-sm tracking-widest px-4 py-2 border-b-2 -mb-px transition-colors ' + (isActive ? 'border-stone-900 text-stone-900' : 'border-transparent text-stone-400 hover:text-stone-700')}
+                    >
+                      {tab.l} <span className="text-stone-400">·{tab.n}</span>
+                    </button>
+                  );
+                })}
               </div>
             )}
 
@@ -206,23 +302,23 @@
             {filtered.length === 0 ? (
               <div className="bg-white border-l-4 border-stone-300 p-8 text-center">
                 <div className="sans text-stone-500 text-base font-light">
-                  {todos.length === 0
-                    ? 'Nothing here yet. Start by adding a task above.'
-                    : 'Nothing complete yet.'}
+                  {todos.length === 0 ? 'Nothing here yet. Start by adding a task above.' : 'Nothing complete yet.'}
                 </div>
               </div>
             ) : (
               <ul className="space-y-3 list-none p-0">
-                {filtered.map((todo, i) => (
-                  <TodoCard
-                    key={todo.id}
-                    todo={todo}
-                    index={i}
-                    onToggle={() => toggle(todo.id)}
-                    onRemove={() => remove(todo.id)}
-                    onUpdateNotes={(notes) => updateNotes(todo.id, notes)}
-                  />
-                ))}
+                {filtered.map(function (todo, i) {
+                  return (
+                    <TodoCard
+                      key={todo.id}
+                      todo={todo}
+                      index={i}
+                      onToggle={function () { toggle(todo.id); }}
+                      onRemove={function () { remove(todo.id); }}
+                      onUpdateNotes={function (notes) { updateNotes(todo.id, notes); }}
+                    />
+                  );
+                })}
               </ul>
             )}
 
@@ -231,14 +327,12 @@
               <div className="mt-10 pt-6 border-t border-stone-300">
                 <div className="flex items-center justify-between mb-2">
                   <div className="display text-sm tracking-widest text-stone-500">PROGRESS</div>
-                  <div className="display text-sm tracking-widest text-stone-700">
-                    {stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0}%
-                  </div>
+                  <div className="display text-sm tracking-widest text-stone-700">{progressPct}%</div>
                 </div>
                 <div className="h-px bg-stone-200 relative overflow-hidden">
                   <div
                     className="absolute inset-y-0 left-0 bg-stone-900 transition-all duration-300"
-                    style={{ width: `${stats.total > 0 ? (stats.done / stats.total) * 100 : 0}%` }}
+                    style={{ width: progressPct + '%' }}
                   />
                 </div>
               </div>
@@ -246,42 +340,46 @@
 
             {/* Footer */}
             <footer className="mt-12 pt-6 border-t border-stone-300 display text-xs tracking-widest text-stone-500 flex justify-between">
-              <span>TASK LIST</span>
-              <span>V1.5</span>
+              <span>MLIST</span>
+              <span>V1.6</span>
             </footer>
+
           </div>
         </div>
       );
     }
 
-    function TodoCard({ todo, index, onToggle, onRemove, onUpdateNotes }) {
+    function TodoCard(props) {
+      const todo = props.todo;
+      const index = props.index;
+      const onToggle = props.onToggle;
+      const onRemove = props.onRemove;
+      const onUpdateNotes = props.onUpdateNotes;
+
       const accentColor = todo.color || ACCENTS[0];
       const MAX_NOTES = 200;
 
       return (
         <li
           className="group bg-white relative overflow-hidden transition-all shadow-sm"
-          style={{
-            borderLeft: `6px solid ${todo.done ? '#d6d3d1' : accentColor}`,
-          }}
+          style={{ borderLeft: '6px solid ' + (todo.done ? '#d6d3d1' : accentColor) }}
         >
           <div className="p-5">
+
+            {/* Title row */}
             <div className="flex items-start gap-3 mb-2">
+              {/* Toggle switch */}
               <button
                 onClick={onToggle}
                 role="switch"
                 aria-checked={todo.done}
                 aria-label={todo.done ? 'Mark incomplete' : 'Mark complete'}
                 className="mt-1 flex-shrink-0 relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none"
-                style={{
-                  background: todo.done ? '#3b82f6' : '#22c55e',
-                }}
+                style={{ background: todo.done ? '#3b82f6' : '#22c55e' }}
               >
                 <span
                   className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200"
-                  style={{
-                    left: todo.done ? 'calc(100% - 22px)' : '2px',
-                  }}
+                  style={{ left: todo.done ? 'calc(100% - 22px)' : '2px' }}
                 />
               </button>
 
@@ -290,9 +388,7 @@
               </div>
 
               <h3
-                className={`sans text-lg font-medium leading-snug flex-1 break-words ${
-                  todo.done ? 'text-stone-400 line-through' : 'text-stone-900'
-                }`}
+                className={'sans text-lg font-medium leading-snug flex-1 break-words ' + (todo.done ? 'text-stone-400 line-through' : 'text-stone-900')}
                 style={{ margin: 0 }}
               >
                 {todo.text}
@@ -307,20 +403,19 @@
               </button>
             </div>
 
-            <div className="ml-[72px]">
+            {/* Notes area */}
+            <div style={{ marginLeft: '72px' }}>
               <textarea
                 value={todo.notes || ''}
-                onChange={(e) => {
-                  if (e.target.value.length <= MAX_NOTES) {
-                    onUpdateNotes(e.target.value);
+                onChange={function (ev) {
+                  if (ev.target.value.length <= MAX_NOTES) {
+                    onUpdateNotes(ev.target.value);
                   }
                 }}
                 placeholder="Add a brief note…"
                 rows={2}
                 disabled={todo.done}
-                className={`sans w-full px-3 py-2 bg-stone-50 border border-stone-200 text-sm leading-relaxed placeholder:text-stone-400 focus:outline-none focus:border-stone-500 focus:bg-white transition-colors resize-none ${
-                  todo.done ? 'text-stone-400 italic' : 'text-stone-700'
-                }`}
+                className={'sans w-full px-3 py-2 bg-stone-50 border border-stone-200 text-sm leading-relaxed placeholder:text-stone-400 focus:outline-none focus:border-stone-500 focus:bg-white transition-colors resize-none ' + (todo.done ? 'text-stone-400 italic' : 'text-stone-700')}
               />
               {todo.notes && todo.notes.length > 0 && (
                 <div className="display text-xs tracking-widest text-stone-400 mt-1 text-right">
@@ -328,6 +423,7 @@
                 </div>
               )}
             </div>
+
           </div>
         </li>
       );
