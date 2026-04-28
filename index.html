@@ -11,7 +11,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { min-height: 100vh; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
-input { font-family: inherit; }
+input, textarea { font-family: inherit; }
 
 :root {
   --bg:       #141414;
@@ -23,615 +23,154 @@ input { font-family: inherit; }
   --muted:    #a8a8a8;
   --faint:    #686868;
   --amber:    #ffd700;
-  --amber2:   #ffe44d;
   --amber-bg: rgba(255,215,0,0.07);
   --red:      #c0442a;
   --green:    #4a8c5c;
 }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Fira Code', monospace;
-  font-weight: 300;
-}
+body { background: var(--bg); color: var(--text); font-family: 'Fira Code', monospace; font-weight: 300; }
 
-/* ── LAYOUT ── */
-.app {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 0 1.5rem 6rem;
-  animation: fadeUp 0.5s ease both;
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+.app { max-width: 640px; margin: 0 auto; padding: 0 1.5rem 6rem; animation: fadeUp 0.5s ease both; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 
-/* ── HEADER ── */
-.header {
-  padding: 3rem 0 2rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 0;
-}
-.header-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem;
-}
-.wordmark {
-  font-family: 'Cormorant Garant', serif;
-  font-size: 4rem;
-  font-weight: 300;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  color: var(--text);
-}
+/* HEADER */
+.header { padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); }
+.header-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+.wordmark { font-family: 'Cormorant Garant', serif; font-size: 4rem; font-weight: 300; letter-spacing: -0.02em; line-height: 1; color: var(--text); }
 .wordmark span { color: var(--amber); }
 .wordmark em { font-style: italic; font-weight: 300; color: var(--text); }
-.tagline {
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 0.5rem;
-  font-weight: 400;
-}
-.sync-status {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 0.25rem 0;
-  transition: color 0.2s;
-  user-select: none;
-}
+.tagline { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-top: 0.5rem; font-weight: 400; }
+.sync-status { display: flex; align-items: center; gap: 0.4rem; font-size: 0.62rem; letter-spacing: 0.1em; color: var(--muted); cursor: pointer; padding: 0.25rem 0; transition: color 0.2s; user-select: none; }
 .sync-status:hover { color: var(--text); }
-.sync-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--muted);
-  flex-shrink: 0;
-  transition: background 0.4s;
-}
+.sync-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.4s; }
 .sync-dot.ok   { background: var(--green); }
 .sync-dot.err  { background: var(--red); }
 .sync-dot.busy { background: var(--amber); animation: throb 1s ease-in-out infinite; }
 @keyframes throb { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-/* ── PAGES ── */
-.pages-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
+/* PAGES */
+.pages-wrap { display: flex; align-items: center; gap: 0; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
 .pages-wrap::-webkit-scrollbar { display: none; }
-.page-tab {
-  font-family: 'Fira Code', monospace;
-  font-size: 0.65rem;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 1rem 1.1rem 0.85rem;
-  white-space: nowrap;
-  position: relative;
-  transition: color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.page-tab::after {
-  content: '';
-  position: absolute;
-  bottom: -1px; left: 0; right: 0;
-  height: 1px;
-  background: var(--amber);
-  transform: scaleX(0);
-  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-  transform-origin: left;
-}
+.page-tab { font-family: 'Fira Code', monospace; font-size: 0.65rem; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 1rem 1.1rem 0.85rem; white-space: nowrap; position: relative; transition: color 0.2s; flex-shrink: 0; display: flex; align-items: center; gap: 0.4rem; }
+.page-tab::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px; background: var(--amber); transform: scaleX(0); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); transform-origin: left; }
 .page-tab:hover { color: var(--text); }
 .page-tab.active { color: var(--amber); }
 .page-tab.active::after { transform: scaleX(1); }
-.tab-count {
-  font-size: 0.55rem;
-  color: var(--faint);
-  transition: color 0.2s;
-}
+.tab-count { font-size: 0.55rem; color: var(--faint); transition: color 0.2s; }
 .page-tab.active .tab-count { color: var(--amber); opacity: 0.6; }
-.page-tab-del {
-  font-size: 0.7rem;
-  color: var(--faint);
-  opacity: 0;
-  transition: all 0.15s;
-  line-height: 1;
-}
+.page-tab-del { font-size: 0.7rem; color: var(--faint); opacity: 0; transition: all 0.15s; line-height: 1; }
 .page-tab:hover .page-tab-del { opacity: 1; }
 .page-tab-del:hover { color: var(--red); }
-.page-tab-add {
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
-  color: var(--faint);
-  padding: 1rem 1rem 0.85rem;
-  flex-shrink: 0;
-  transition: color 0.2s;
-}
+.page-tab-add { font-size: 0.62rem; letter-spacing: 0.1em; color: var(--faint); padding: 1rem 1rem 0.85rem; flex-shrink: 0; transition: color 0.2s; }
 .page-tab-add:hover { color: var(--amber); }
 
-/* ── SCRIPT URL BANNER ── */
-.url-banner {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-top: none;
-  padding: 0.85rem 1rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-.url-input {
-  flex: 1;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  color: var(--text);
-  font-family: 'Fira Code', monospace;
-  font-size: 0.7rem;
-  font-weight: 300;
-  padding: 0.45rem 0.75rem;
-  outline: none;
-  transition: border-color 0.2s;
-  border-radius: 2px;
-}
+/* URL BANNER */
+.url-banner { background: var(--bg2); border: 1px solid var(--border); border-top: none; padding: 0.85rem 1rem; display: flex; gap: 0.5rem; align-items: center; }
+.url-input { flex: 1; background: var(--bg3); border: 1px solid var(--border2); color: var(--text); font-family: 'Fira Code', monospace; font-size: 0.7rem; font-weight: 300; padding: 0.45rem 0.75rem; outline: none; transition: border-color 0.2s; border-radius: 2px; }
 .url-input:focus { border-color: var(--amber); }
 .url-input::placeholder { color: var(--muted); }
-.url-save-btn {
-  background: var(--amber);
-  color: var(--bg);
-  font-family: 'Fira Code', monospace;
-  font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  padding: 0.45rem 0.85rem;
-  border-radius: 2px;
-  white-space: nowrap;
-  transition: opacity 0.15s;
-}
+.url-save-btn { background: var(--amber); color: var(--bg); font-family: 'Fira Code', monospace; font-size: 0.65rem; font-weight: 500; letter-spacing: 0.1em; padding: 0.45rem 0.85rem; border-radius: 2px; white-space: nowrap; transition: opacity 0.15s; }
 .url-save-btn:hover { opacity: 0.8; }
-.url-dismiss {
-  font-size: 0.7rem;
-  color: var(--muted);
-  padding: 0.45rem 0.5rem;
-  transition: color 0.15s;
-  flex-shrink: 0;
-}
+.url-dismiss { font-size: 0.7rem; color: var(--muted); padding: 0.45rem 0.5rem; transition: color 0.15s; flex-shrink: 0; }
 .url-dismiss:hover { color: var(--text); }
 
-/* ── ADD INPUT ── */
-.add-row {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
-}
-.add-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--text);
-  font-family: 'Cormorant Garant', serif;
-  font-size: 1.15rem;
-  font-weight: 300;
-  font-style: italic;
-  padding: 1rem 0;
-  outline: none;
-}
-.add-input::placeholder {
-  color: var(--faint);
-}
-.add-btn {
-  font-family: 'Fira Code', monospace;
-  font-size: 0.6rem;
-  font-weight: 500;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 0 0 0 1rem;
-  transition: color 0.2s;
-  flex-shrink: 0;
-}
+/* ADD INPUT */
+.add-row { display: flex; gap: 0; border-bottom: 1px solid var(--border); }
+.add-input { flex: 1; background: transparent; border: none; color: var(--text); font-family: 'Cormorant Garant', serif; font-size: 1.15rem; font-weight: 300; font-style: italic; padding: 1rem 0; outline: none; }
+.add-input::placeholder { color: var(--faint); }
+.add-btn { font-family: 'Fira Code', monospace; font-size: 0.6rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); padding: 0 0 0 1rem; transition: color 0.2s; flex-shrink: 0; }
 .add-btn:not(:disabled):hover { color: var(--amber); }
 .add-btn:disabled { opacity: 0.25; cursor: not-allowed; }
 
-/* ── FILTERS ── */
-.filter-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 0 0.25rem;
-}
+/* FILTERS */
+.filter-bar { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0 0.25rem; }
 .filter-tabs { display: flex; gap: 0; }
-.f-tab {
-  font-size: 0.6rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 0.25rem 0.7rem 0.25rem 0;
-  transition: color 0.2s;
-  margin-right: 0.5rem;
-}
+.f-tab { font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); padding: 0.25rem 0.7rem 0.25rem 0; transition: color 0.2s; margin-right: 0.5rem; }
 .f-tab:hover { color: var(--text); }
 .f-tab.active { color: var(--amber); }
-.clear-done-btn {
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--faint);
-  transition: color 0.2s;
-}
+.clear-done-btn { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); transition: color 0.2s; }
 .clear-done-btn:hover { color: var(--red); }
 
-/* ── LIST ── */
+/* LIST */
 .todo-list { list-style: none; }
-.todo-item {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 0.7rem 0;
-  border-bottom: 1px solid var(--border);
-  transition: background 0.15s;
-  animation: slideIn 0.2s ease both;
-}
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-6px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
+.todo-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.7rem 0; border-bottom: 1px solid var(--border); transition: background 0.15s; animation: slideIn 0.2s ease both; cursor: pointer; }
+@keyframes slideIn { from { opacity:0; transform:translateX(-6px); } to { opacity:1; transform:translateX(0); } }
 .todo-item:hover { background: var(--amber-bg); margin: 0 -0.5rem; padding-left: 0.5rem; padding-right: 0.5rem; }
-
-.check {
-  width: 15px; height: 15px;
-  border: 1px solid var(--border2);
-  border-radius: 2px;
-  flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
-  background: transparent;
-}
-.check:hover { border-color: var(--amber); }
-.todo-item.done .check {
-  background: var(--amber);
-  border-color: var(--amber);
-}
-.check svg { display: none; }
-.todo-item.done .check svg { display: block; }
-
-.accent-bar {
-  width: 2px;
-  height: 1rem;
-  border-radius: 1px;
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-.todo-item.done .accent-bar { opacity: 0.15; }
-
-.todo-text {
-  flex: 1;
-  font-family: 'Cormorant Garant', serif;
-  font-size: 1.05rem;
-  font-weight: 400;
-  color: var(--text);
-  line-height: 1.3;
-  word-break: break-word;
-}
-.todo-item.done .todo-text {
-  text-decoration: line-through;
-  color: var(--muted);
-  text-decoration-color: var(--faint);
-}
-
-.todo-idx {
-  font-size: 0.55rem;
-  color: var(--faint);
-  letter-spacing: 0.05em;
-  flex-shrink: 0;
-  min-width: 1.5rem;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.del-btn {
-  color: var(--faint);
-  font-size: 1rem;
-  width: 1.25rem;
-  height: 1.25rem;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  opacity: 0;
-  transition: all 0.15s;
-}
-.todo-item:hover .del-btn { opacity: 1; }
-.del-btn:hover { color: var(--red); }
-
-/* ── EMPTY ── */
-.empty {
-  padding: 4rem 0;
-  text-align: center;
-  font-family: 'Cormorant Garant', serif;
-  font-size: 1.1rem;
-  font-style: italic;
-  color: var(--faint);
-}
-
-/* ── PROGRESS ── */
-.progress-wrap {
-  margin-top: 2rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--border);
-}
-.progress-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.58rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.6rem;
-}
-.progress-track {
-  height: 2px;
-  background: var(--border);
-  position: relative;
-  overflow: visible;
-}
-.progress-fill {
-  position: absolute;
-  top: 0; bottom: 0; left: 0;
-  background: var(--amber);
-  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
-}
-.progress-fill::after {
-  content: '';
-  position: absolute;
-  right: -1px; top: -2px;
-  width: 5px; height: 5px;
-  background: var(--amber);
-  border-radius: 50%;
-}
-
-/* ── MODAL ── */
-.modal-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(4px);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  padding: 2rem;
-  width: 360px;
-  animation: popIn 0.2s ease both;
-}
-@keyframes popIn {
-  from { opacity:0; transform:scale(0.96); }
-  to   { opacity:1; transform:scale(1); }
-}
-.modal-title {
-  font-family: 'Cormorant Garant', serif;
-  font-size: 1.4rem;
-  font-weight: 300;
-  color: var(--text);
-  margin-bottom: 0.2rem;
-}
-.modal-sub {
-  font-size: 0.62rem;
-  color: var(--muted);
-  letter-spacing: 0.1em;
-  margin-bottom: 1.25rem;
-}
-.modal-input {
-  width: 100%;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  color: var(--text);
-  font-family: 'Cormorant Garant', serif;
-  font-size: 1rem;
-  font-style: italic;
-  padding: 0.6rem 0.8rem;
-  outline: none;
-  margin-bottom: 1rem;
-  transition: border-color 0.2s;
-  border-radius: 2px;
-}
-.modal-input:focus { border-color: var(--amber); }
-.modal-input::placeholder { color: var(--muted); font-style: italic; }
-.modal-btns { display: flex; justify-content: flex-end; gap: 0.5rem; }
-.modal-cancel {
-  font-size: 0.65rem; letter-spacing: 0.1em;
-  color: var(--muted); padding: 0.5rem 0.8rem;
-  border: 1px solid var(--border2); border-radius: 2px;
-  transition: all 0.15s;
-}
-.modal-cancel:hover { color: var(--text); border-color: var(--muted); }
-.modal-confirm {
-  font-size: 0.65rem; letter-spacing: 0.1em;
-  background: var(--amber); color: var(--bg);
-  padding: 0.5rem 1rem; border-radius: 2px;
-  font-weight: 500; transition: opacity 0.15s;
-}
-.modal-confirm:hover { opacity: 0.85; }
-
-/* ── DETAIL PANEL ── */
-.detail-panel {
-  position: fixed;
-  top: 0; right: 0; bottom: 0;
-  width: 320px;
-  background: #1c1c1c;
-  border-left: 1px solid #383838;
-  z-index: 300;
-  transform: translateX(100%);
-  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.detail-panel.open { transform: translateX(0); }
-.detail-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 299;
-  backdrop-filter: blur(2px);
-}
-.detail-overlay.open { display: block; }
-.detail-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.25rem 1rem;
-  border-bottom: 1px solid #383838;
-  flex-shrink: 0;
-}
-.detail-title {
-  font-family: 'Fira Code', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #a8a8a8;
-}
-.detail-close {
-  color: #686868;
-  font-size: 1.2rem;
-  line-height: 1;
-  transition: color 0.15s;
-  padding: 0.2rem;
-}
-.detail-close:hover { color: #ffffff; }
-.detail-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.25rem;
-}
-.detail-task {
-  font-family: 'Cormorant Garant', serif;
-  font-size: 1.25rem;
-  font-weight: 400;
-  color: #ffffff;
-  line-height: 1.35;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid #383838;
-}
-.detail-field { margin-bottom: 1.1rem; }
-.detail-field-label {
-  font-family: 'Fira Code', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #686868;
-  margin-bottom: 0.3rem;
-}
-.detail-field-value {
-  font-size: 0.82rem;
-  color: #a8a8a8;
-  line-height: 1.6;
-  word-break: break-word;
-  white-space: pre-wrap;
-}
-.detail-field-value.highlight { color: #ffd700; }
-.detail-no-info {
-  font-family: 'Cormorant Garant', serif;
-  font-style: italic;
-  font-size: 0.95rem;
-  color: #686868;
-  text-align: center;
-  margin-top: 2rem;
-}
-.todo-item { cursor: pointer; }
-
-/* ── DUE DATE ── */
-.due-badge {
-  font-family: 'Fira Code', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.08em;
-  padding: 0.15rem 0.4rem;
-  border-radius: 2px;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-.due-badge.overdue  { background: rgba(192,68,42,0.2); color: #e06048; border: 1px solid rgba(192,68,42,0.3); }
-.due-badge.today    { background: rgba(255,215,0,0.15); color: #ffd700; border: 1px solid rgba(255,215,0,0.3); }
-.due-badge.upcoming { background: rgba(74,140,92,0.15); color: #6ab880; border: 1px solid rgba(74,140,92,0.3); }
-
-/* ── DRAG HANDLE ── */
-.drag-handle {
-  color: #686868; font-size: 0.85rem; cursor: grab;
-  flex-shrink: 0; opacity: 0; transition: opacity 0.15s;
-  user-select: none; line-height: 1; padding: 0 0.1rem;
-}
+.drag-handle { color: var(--faint); font-size: 0.85rem; cursor: grab; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; user-select: none; line-height: 1; padding: 0 0.1rem; }
 .todo-item:hover .drag-handle { opacity: 1; }
 .todo-item.dragging { opacity: 0.35; }
 .todo-item.drag-over { border-top: 2px solid var(--amber); }
+.check { width: 15px; height: 15px; border: 1px solid var(--border2); border-radius: 2px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; background: transparent; }
+.check:hover { border-color: var(--amber); }
+.todo-item.done .check { background: var(--amber); border-color: var(--amber); }
+.check svg { display: none; }
+.todo-item.done .check svg { display: block; }
+.accent-bar { width: 2px; height: 1rem; border-radius: 1px; flex-shrink: 0; opacity: 0.7; }
+.todo-item.done .accent-bar { opacity: 0.15; }
+.todo-text { flex: 1; font-family: 'Cormorant Garant', serif; font-size: 1.05rem; font-weight: 400; color: var(--text); line-height: 1.3; word-break: break-word; }
+.todo-item.done .todo-text { text-decoration: line-through; color: var(--muted); text-decoration-color: var(--faint); }
+.due-badge { font-family: 'Fira Code', monospace; font-size: 0.55rem; letter-spacing: 0.08em; padding: 0.15rem 0.4rem; border-radius: 2px; flex-shrink: 0; white-space: nowrap; }
+.due-badge.overdue  { background: rgba(192,68,42,0.2);  color: #e06048; border: 1px solid rgba(192,68,42,0.3); }
+.due-badge.today    { background: rgba(255,215,0,0.15); color: #ffd700; border: 1px solid rgba(255,215,0,0.3); }
+.due-badge.upcoming { background: rgba(74,140,92,0.15); color: #6ab880; border: 1px solid rgba(74,140,92,0.3); }
+.todo-idx { font-size: 0.55rem; color: var(--faint); letter-spacing: 0.05em; flex-shrink: 0; min-width: 1.5rem; text-align: right; font-variant-numeric: tabular-nums; }
+.del-btn { color: var(--faint); font-size: 1rem; width: 1.25rem; height: 1.25rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; opacity: 0; transition: all 0.15s; }
+.todo-item:hover .del-btn { opacity: 1; }
+.del-btn:hover { color: var(--red); }
 
-/* ── DETAIL PANEL ACTIONS ── */
-.detail-actions {
-  display: flex; gap: 0.5rem;
-  padding: 1rem 1.25rem;
-  border-top: 1px solid #383838;
-  flex-shrink: 0;
-}
-.detail-act {
-  flex: 1; font-family: 'Fira Code', monospace;
-  font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
-  padding: 0.5rem; border: 1px solid #383838; border-radius: 2px;
-  color: #a8a8a8; transition: all 0.15s; text-align: center;
-}
+/* EMPTY */
+.empty { padding: 4rem 0; text-align: center; font-family: 'Cormorant Garant', serif; font-size: 1.1rem; font-style: italic; color: var(--faint); }
+
+/* PROGRESS */
+.progress-wrap { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
+.progress-meta { display: flex; justify-content: space-between; font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+.progress-track { height: 2px; background: var(--border); position: relative; overflow: visible; }
+.progress-fill { position: absolute; top: 0; bottom: 0; left: 0; background: var(--amber); transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+.progress-fill::after { content: ''; position: absolute; right: -1px; top: -2px; width: 5px; height: 5px; background: var(--amber); border-radius: 50%; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--bg2); border: 1px solid var(--border2); padding: 2rem; width: 360px; animation: popIn 0.2s ease both; }
+@keyframes popIn { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:scale(1); } }
+.modal-title { font-family: 'Cormorant Garant', serif; font-size: 1.4rem; font-weight: 300; color: var(--text); margin-bottom: 0.2rem; }
+.modal-sub { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 1.25rem; }
+.modal-input { width: 100%; background: var(--bg3); border: 1px solid var(--border2); color: var(--text); font-family: 'Cormorant Garant', serif; font-size: 1rem; font-style: italic; padding: 0.6rem 0.8rem; outline: none; margin-bottom: 1rem; transition: border-color 0.2s; border-radius: 2px; }
+.modal-input:focus { border-color: var(--amber); }
+.modal-input::placeholder { color: var(--muted); font-style: italic; }
+.modal-btns { display: flex; justify-content: flex-end; gap: 0.5rem; }
+.modal-cancel { font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); padding: 0.5rem 0.8rem; border: 1px solid var(--border2); border-radius: 2px; transition: all 0.15s; }
+.modal-cancel:hover { color: var(--text); border-color: var(--muted); }
+.modal-confirm { font-size: 0.65rem; letter-spacing: 0.1em; background: var(--amber); color: var(--bg); padding: 0.5rem 1rem; border-radius: 2px; font-weight: 500; transition: opacity 0.15s; }
+.modal-confirm:hover { opacity: 0.85; }
+
+/* DETAIL PANEL */
+.detail-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 320px; background: #1c1c1c; border-left: 1px solid #383838; z-index: 300; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; overflow: hidden; }
+.detail-panel.open { transform: translateX(0); }
+.detail-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 299; backdrop-filter: blur(2px); }
+.detail-overlay.open { display: block; }
+.detail-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.25rem 1rem; border-bottom: 1px solid #383838; flex-shrink: 0; }
+.detail-title { font-family: 'Fira Code', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: #a8a8a8; }
+.detail-close { color: #686868; font-size: 1.2rem; line-height: 1; transition: color 0.15s; padding: 0.2rem; }
+.detail-close:hover { color: #ffffff; }
+.detail-body { flex: 1; overflow-y: auto; padding: 1.25rem; }
+.detail-task { font-family: 'Cormorant Garant', serif; font-size: 1.25rem; font-weight: 400; color: #ffffff; line-height: 1.35; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid #383838; }
+.detail-field { margin-bottom: 1.1rem; }
+.detail-field-label { font-family: 'Fira Code', monospace; font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase; color: #686868; margin-bottom: 0.3rem; }
+.detail-field-value { font-size: 0.82rem; color: #a8a8a8; line-height: 1.6; word-break: break-word; white-space: pre-wrap; }
+.detail-field-value.highlight { color: #ffd700; }
+.detail-no-info { font-family: 'Cormorant Garant', serif; font-style: italic; font-size: 0.95rem; color: #686868; text-align: center; margin-top: 2rem; }
+.detail-actions { display: flex; gap: 0.5rem; padding: 1rem 1.25rem; border-top: 1px solid #383838; flex-shrink: 0; }
+.detail-act { flex: 1; font-family: 'Fira Code', monospace; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.5rem; border: 1px solid #383838; border-radius: 2px; color: #a8a8a8; transition: all 0.15s; text-align: center; }
 .detail-act:hover { border-color: var(--amber); color: var(--amber); }
 .detail-act.danger:hover { border-color: var(--red); color: var(--red); }
-
-/* ── EDIT MODE ── */
-.detail-edit-wrap { margin-bottom: 1rem; }
-.detail-edit-input {
-  width: 100%; background: #222; border: 1px solid var(--amber);
-  color: #fff; font-family: 'Cormorant Garant', serif;
-  font-size: 1.05rem; padding: 0.5rem 0.6rem; outline: none;
-  border-radius: 2px; resize: vertical; min-height: 56px;
-}
-.detail-due-input {
-  width: 100%; background: #222; border: 1px solid #484848;
-  color: #fff; font-family: 'Fira Code', monospace;
-  font-size: 0.8rem; padding: 0.45rem 0.6rem; outline: none;
-  border-radius: 2px; margin-top: 0.5rem;
-}
+.detail-edit-input { width: 100%; background: #222; border: 1px solid var(--amber); color: #fff; font-family: 'Cormorant Garant', serif; font-size: 1.05rem; padding: 0.5rem 0.6rem; outline: none; border-radius: 2px; resize: vertical; min-height: 56px; }
+.detail-due-input { width: 100%; background: #222; border: 1px solid #484848; color: #fff; font-family: 'Fira Code', monospace; font-size: 0.8rem; padding: 0.45rem 0.6rem; outline: none; border-radius: 2px; margin-top: 0.5rem; }
 .detail-due-input:focus { border-color: var(--amber); }
-.detail-save-btn {
-  width: 100%; margin-top: 0.6rem;
-  background: var(--amber); color: #141414;
-  font-family: 'Fira Code', monospace; font-size: 0.65rem;
-  font-weight: 500; letter-spacing: 0.12em; padding: 0.55rem;
-  border-radius: 2px; transition: opacity 0.15s;
-}
+.detail-save-btn { width: 100%; margin-top: 0.6rem; background: var(--amber); color: #141414; font-family: 'Fira Code', monospace; font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; padding: 0.55rem; border-radius: 2px; transition: opacity 0.15s; }
 .detail-save-btn:hover { opacity: 0.85; }
-
-/* ── MOVE PAGE ── */
 .move-page-list { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.5rem; }
-.move-page-btn {
-  font-family: 'Fira Code', monospace; font-size: 0.65rem;
-  letter-spacing: 0.1em; padding: 0.45rem 0.75rem;
-  border: 1px solid #383838; border-radius: 2px;
-  color: #a8a8a8; text-align: left; transition: all 0.15s;
-}
+.move-page-btn { font-family: 'Fira Code', monospace; font-size: 0.65rem; letter-spacing: 0.1em; padding: 0.45rem 0.75rem; border: 1px solid #383838; border-radius: 2px; color: #a8a8a8; text-align: left; transition: all 0.15s; }
 .move-page-btn:hover { border-color: var(--amber); color: var(--amber); }
 .move-page-btn.current { color: #686868; cursor: default; font-style: italic; }
 .move-page-btn.current:hover { border-color: #383838; color: #686868; }
@@ -640,7 +179,6 @@ body {
 <body>
 <div class="app">
 
-  <!-- HEADER -->
   <header class="header">
     <div class="header-row">
       <div>
@@ -649,28 +187,24 @@ body {
       </div>
       <div class="sync-status" id="sync-status" onclick="toggleUrlBanner()">
         <span class="sync-dot" id="sync-dot"></span>
-        <span id="sync-label">not connected</span>
+        <span id="sync-label">connecting…</span>
       </div>
     </div>
   </header>
 
-  <!-- PAGES TABS -->
   <nav class="pages-wrap" id="pages-wrap"></nav>
 
-  <!-- URL BANNER (hidden by default) -->
   <div class="url-banner" id="url-banner" style="display:none;">
-    <input class="url-input" id="url-input" type="url" placeholder="Paste Apps Script URL…  (see MList_AppScript.gs for setup)">
+    <input class="url-input" id="url-input" type="url" placeholder="Paste Apps Script URL…">
     <button class="url-save-btn" onclick="saveUrl()">Connect</button>
-    <button class="url-dismiss" onclick="toggleUrlBanner()" title="Close">✕</button>
+    <button class="url-dismiss" onclick="toggleUrlBanner()">✕</button>
   </div>
 
-  <!-- ADD TASK -->
   <div class="add-row">
     <input class="add-input" id="add-input" type="text" placeholder="Add a task…" autocomplete="off">
     <button class="add-btn" id="add-btn" disabled>+ add</button>
   </div>
 
-  <!-- FILTER BAR -->
   <div class="filter-bar" id="filter-bar" style="display:none;">
     <div class="filter-tabs">
       <button class="f-tab active" data-f="all">All <span id="c-all">0</span></button>
@@ -680,11 +214,9 @@ body {
     <button class="clear-done-btn" id="clear-done-btn" style="display:none" onclick="clearDone()">Clear done</button>
   </div>
 
-  <!-- LIST -->
   <ul class="todo-list" id="todo-list"></ul>
   <div class="empty" id="empty">Nothing here yet.</div>
 
-  <!-- PROGRESS -->
   <div class="progress-wrap" id="progress-wrap" style="display:none;">
     <div class="progress-meta">
       <span>Progress</span>
@@ -710,33 +242,35 @@ body {
   </div>
 </div>
 
+<!-- DETAIL SLIDE PANEL -->
+<div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detail-panel">
+  <div class="detail-header">
+    <div class="detail-title">Task detail</div>
+    <button class="detail-close" onclick="closeDetail()">×</button>
+  </div>
+  <div class="detail-body" id="detail-body"></div>
+  <div class="detail-actions">
+    <button class="detail-act" onclick="startEdit()">Edit</button>
+    <button class="detail-act" onclick="showMove()">Move</button>
+    <button class="detail-act danger" onclick="deleteFromDetail()">Delete</button>
+  </div>
+</div>
+
 <script>
 'use strict';
 
-// ── CONFIG ────────────────────────────────────────────────────────
-// After deploying MList_AppScript.gs, paste your Web App URL here:
 var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxGsOWPZ120y5OAC378Qrx1wPj2KxS-5kVdUABlqJqbCdyxH2cLHeRGhoD82tQxwGSO/exec';
+var ACCENTS = ['#ffd700','#5b8fa8','#7a9e6e','#b06060','#8f79b8','#c4982a','#5a9e8f','#a87070','#7070a8','#9ea85a'];
+var LS_KEY  = 'mlist_3';
 
-var ACCENTS = [
-  '#ffd700','#5b8fa8','#7a9e6e','#b06060','#8f79b8',
-  '#ffe44d','#5a9e8f','#a87070','#7070a8','#9ea85a'
-];
+var S = { pages: ['Main','Work'], page: 'Main', data: {}, filter: 'all', url: SCRIPT_URL };
 
-// ── STATE ─────────────────────────────────────────────────────────
-var S = {
-  pages: ['Main', 'Work'],
-  page: 'Main',
-  data: {},        // { pageName: [todo…] }
-  filter: 'all',
-  url: SCRIPT_URL
-};
-
-function todos()        { return S.data[S.page] || []; }
-function setTodos(arr)  { S.data[S.page] = arr; }
-function rndAccent()    { return ACCENTS[Math.floor(Math.random() * ACCENTS.length)]; }
+function todos()       { return S.data[S.page] || []; }
+function setTodos(a)   { S.data[S.page] = a; }
+function rndAccent()   { return ACCENTS[Math.floor(Math.random() * ACCENTS.length)]; }
 
 // ── LOCAL STORAGE ─────────────────────────────────────────────────
-var LS_KEY = 'mlist_3';
 function lsave() {
   try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch(e) {}
 }
@@ -744,17 +278,14 @@ function lload() {
   try {
     var r = localStorage.getItem(LS_KEY);
     if (r) {
-      var parsed = JSON.parse(r);
-      S.pages  = parsed.pages  || S.pages;
-      S.data   = parsed.data   || {};
-      S.page   = parsed.page   || S.pages[0];
-      S.filter = parsed.filter || 'all';
-      // Always prefer hardcoded SCRIPT_URL if set
-      S.url    = SCRIPT_URL || parsed.url || '';
+      var p = JSON.parse(r);
+      S.pages  = p.pages  || S.pages;
+      S.data   = p.data   || {};
+      S.page   = p.page   || S.pages[0];
+      S.filter = p.filter || 'all';
     }
   } catch(e) {}
-  // Ensure URL is always set from constant if available
-  if (SCRIPT_URL) S.url = SCRIPT_URL;
+  S.url = SCRIPT_URL; // always use hardcoded URL
 }
 
 // ── SYNC ──────────────────────────────────────────────────────────
@@ -772,8 +303,6 @@ async function push() {
   if (!S.url) return;
   dot('busy', 'saving…');
   try {
-    // Use 'update' action — sends only id/text/done/color (no snippets)
-    // AppScript preserves existing sender/subject/snippet from the sheet
     var slim = todos().map(function(t) {
       return { id: t.id, text: t.text, done: t.done, color: t.color, due: t.due||'' };
     });
@@ -798,10 +327,7 @@ async function pullPages() {
   try {
     var r = await fetch(S.url + '?action=pages');
     var d = await r.json();
-    if (d.ok) {
-      d.pages.forEach(function(p) { if (!S.pages.includes(p)) S.pages.push(p); });
-      lsave(); renderPages();
-    }
+    if (d.ok) { d.pages.forEach(function(p) { if (!S.pages.includes(p)) S.pages.push(p); }); lsave(); renderPages(); }
   } catch(e) {}
 }
 function enc(s) { return encodeURIComponent(s); }
@@ -811,10 +337,7 @@ function toggleUrlBanner() {
   var b = document.getElementById('url-banner');
   var shown = b.style.display !== 'none';
   b.style.display = shown ? 'none' : 'flex';
-  if (!shown) {
-    document.getElementById('url-input').value = S.url;
-    setTimeout(function() { document.getElementById('url-input').focus(); }, 50);
-  }
+  if (!shown) { document.getElementById('url-input').value = S.url; setTimeout(function() { document.getElementById('url-input').focus(); }, 50); }
 }
 async function saveUrl() {
   var v = document.getElementById('url-input').value.trim();
@@ -822,9 +345,7 @@ async function saveUrl() {
   S.url = v; lsave();
   document.getElementById('url-banner').style.display = 'none';
   dot('busy', 'connecting…');
-  await pullPages();
-  await pull();
-  render();
+  await pullPages(); await pull(); render();
 }
 
 // ── PAGES ─────────────────────────────────────────────────────────
@@ -834,147 +355,96 @@ function renderPages() {
   S.pages.forEach(function(p) {
     var btn = document.createElement('button');
     btn.className = 'page-tab' + (p === S.page ? ' active' : '');
-
     var count = (S.data[p] || []).filter(function(t) { return !t.done; }).length;
-
-    var nameSpan = document.createElement('span');
-    nameSpan.textContent = p;
-    btn.appendChild(nameSpan);
-
-    var countSpan = document.createElement('span');
-    countSpan.className = 'tab-count';
-    countSpan.textContent = count > 0 ? count : '';
-    btn.appendChild(countSpan);
-
+    var ns = document.createElement('span'); ns.textContent = p; btn.appendChild(ns);
+    var cs = document.createElement('span'); cs.className = 'tab-count'; cs.textContent = count > 0 ? count : ''; btn.appendChild(cs);
     if (S.pages.length > 1) {
-      var del = document.createElement('button');
-      del.className = 'page-tab-del';
-      del.textContent = '×';
-      del.title = 'Delete page';
-      del.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (confirm('Delete page "' + p + '"? All its tasks will be lost.')) deletePage(p);
-      });
+      var del = document.createElement('button'); del.className = 'page-tab-del'; del.textContent = '×';
+      del.addEventListener('click', function(e) { e.stopPropagation(); if (confirm('Delete "' + p + '"?')) deletePage(p); });
       btn.appendChild(del);
     }
-
     btn.addEventListener('click', function() { switchPage(p); });
     wrap.appendChild(btn);
   });
-
-  var addBtn = document.createElement('button');
-  addBtn.className = 'page-tab-add';
-  addBtn.textContent = '+ page';
-  addBtn.addEventListener('click', openModal);
-  wrap.appendChild(addBtn);
+  var add = document.createElement('button'); add.className = 'page-tab-add'; add.textContent = '+ page';
+  add.addEventListener('click', openModal); wrap.appendChild(add);
 }
-
-async function switchPage(p) {
-  S.page = p; S.filter = 'all'; lsave();
-  renderPages();
-  if (S.url) await pull(p);
-  render();
-}
-
+async function switchPage(p) { S.page = p; S.filter = 'all'; lsave(); renderPages(); if (S.url) await pull(p); render(); }
 function deletePage(p) {
   S.pages = S.pages.filter(function(x) { return x !== p; });
   delete S.data[p];
   if (S.page === p) S.page = S.pages[0];
   lsave(); renderPages(); render();
 }
-
-function openModal() {
-  document.getElementById('modal').classList.add('open');
-  setTimeout(function() { document.getElementById('modal-input').focus(); }, 50);
-}
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-  document.getElementById('modal-input').value = '';
-}
+function openModal() { document.getElementById('modal').classList.add('open'); setTimeout(function() { document.getElementById('modal-input').focus(); }, 50); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); document.getElementById('modal-input').value = ''; }
 function confirmPage() {
   var name = document.getElementById('modal-input').value.trim();
   if (!name) return;
-  if (S.pages.includes(name)) { alert('A page with that name already exists.'); return; }
-  S.pages.push(name); lsave();
-  closeModal(); switchPage(name);
+  if (S.pages.includes(name)) { alert('Already exists.'); return; }
+  S.pages.push(name); lsave(); closeModal(); switchPage(name);
 }
 
 // ── TODOS ─────────────────────────────────────────────────────────
 function addTodo() {
-  var inp = document.getElementById('add-input');
-  var text = inp.value.trim(); if (!text) return;
-  todos().push({ id: Date.now(), text: text, done: false, color: rndAccent() });
+  var inp = document.getElementById('add-input'), text = inp.value.trim(); if (!text) return;
+  todos().push({ id: Date.now(), text: text, done: false, color: rndAccent(), due: '', sender: '', subject: '', snippet: '' });
   inp.value = ''; document.getElementById('add-btn').disabled = true;
   lsave(); schedulePush(); render();
 }
 function toggleTodo(id) {
-  setTodos(todos().map(function(t) {
-    return t.id === id ? Object.assign({}, t, { done: !t.done }) : t;
-  }));
+  setTodos(todos().map(function(t) { return t.id === id ? Object.assign({}, t, { done: !t.done }) : t; }));
   lsave(); schedulePush(); render();
 }
-function removeTodo(id) {
-  setTodos(todos().filter(function(t) { return t.id !== id; }));
-  lsave(); schedulePush(); render();
-}
-function clearDone() {
-  setTodos(todos().filter(function(t) { return !t.done; }));
-  lsave(); schedulePush(); render();
+function removeTodo(id) { setTodos(todos().filter(function(t) { return t.id !== id; })); lsave(); schedulePush(); render(); }
+function clearDone() { setTodos(todos().filter(function(t) { return !t.done; })); lsave(); schedulePush(); render(); }
+
+// ── DRAG TO REORDER ───────────────────────────────────────────────
+var dragSrcId = null;
+function onDragStart(e) { dragSrcId = this.dataset.id; this.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
+function onDragOver(e)  { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; this.classList.add('drag-over'); }
+function onDragLeave()  { this.classList.remove('drag-over'); }
+function onDragEnd()    { document.querySelectorAll('.todo-item').forEach(function(el) { el.classList.remove('dragging','drag-over'); }); }
+function onDrop(e) {
+  e.stopPropagation(); this.classList.remove('drag-over');
+  var targetId = this.dataset.id;
+  if (!dragSrcId || dragSrcId === targetId) return;
+  var arr = todos();
+  var si = arr.findIndex(function(t) { return String(t.id) === String(dragSrcId); });
+  var ti = arr.findIndex(function(t) { return String(t.id) === String(targetId); });
+  if (si < 0 || ti < 0) return;
+  var moved = arr.splice(si, 1)[0]; arr.splice(ti, 0, moved);
+  setTodos(arr); lsave(); schedulePush(); render();
 }
 
 // ── RENDER ────────────────────────────────────────────────────────
 function render() {
-  var all  = todos();
-  var done = all.filter(function(t) { return  t.done; });
-  var open = all.filter(function(t) { return !t.done; });
-
-  // counts
+  var all = todos(), done = all.filter(function(t){return t.done;}), open = all.filter(function(t){return !t.done;});
   document.getElementById('c-all').textContent  = all.length;
   document.getElementById('c-open').textContent = open.length;
   document.getElementById('c-done').textContent = done.length;
-
-  // filter bar
   document.getElementById('filter-bar').style.display = all.length ? 'flex' : 'none';
-  document.querySelectorAll('.f-tab').forEach(function(t) {
-    t.classList.toggle('active', t.dataset.f === S.filter);
-  });
+  document.querySelectorAll('.f-tab').forEach(function(t) { t.classList.toggle('active', t.dataset.f === S.filter); });
   document.getElementById('clear-done-btn').style.display = done.length ? '' : 'none';
-
-  // visible items
-  var vis = S.filter === 'done' ? done : S.filter === 'open' ? open : all;
-
-  var listEl  = document.getElementById('todo-list');
-  var emptyEl = document.getElementById('empty');
+  var vis = S.filter==='done' ? done : S.filter==='open' ? open : all;
+  var listEl = document.getElementById('todo-list'), emptyEl = document.getElementById('empty');
   listEl.innerHTML = '';
-
-  if (!vis.length) {
-    emptyEl.style.display = '';
-    emptyEl.textContent = all.length ? 'Nothing here.' : 'Nothing here yet.';
-  } else {
-    emptyEl.style.display = 'none';
-    vis.forEach(function(t, i) { listEl.appendChild(buildItem(t, i)); });
-  }
-
-  // progress
+  if (!vis.length) { emptyEl.style.display=''; emptyEl.textContent = all.length ? 'Nothing here.' : 'Nothing here yet.'; }
+  else { emptyEl.style.display='none'; vis.forEach(function(t,i) { listEl.appendChild(buildItem(t,i)); }); }
   var pw = document.getElementById('progress-wrap');
   if (all.length > 0) {
-    pw.style.display = '';
-    var pct = Math.round(done.length / all.length * 100);
-    var pct2 = Math.round(done.length / all.length * 100);
-    document.getElementById('progress-label').textContent = done.length + ' / ' + all.length + '  (' + pct2 + '%)';
+    pw.style.display='';
+    var pct = Math.round(done.length/all.length*100);
+    document.getElementById('progress-label').textContent = done.length + ' / ' + all.length + '  (' + pct + '%)';
     document.getElementById('progress-fill').style.width = pct + '%';
-  } else {
-    pw.style.display = 'none';
-  }
-
-  // update tab counts
+  } else { pw.style.display='none'; }
   renderPages();
 }
 
 function buildItem(todo, idx) {
   var li = document.createElement('li');
   li.className = 'todo-item' + (todo.done ? ' done' : '');
-  li.setAttribute('draggable', 'true');
+  li.setAttribute('draggable','true');
   li.dataset.id = todo.id;
   li.addEventListener('click', function() { openDetail(todo); });
   li.addEventListener('dragstart', onDragStart);
@@ -983,1468 +453,113 @@ function buildItem(todo, idx) {
   li.addEventListener('drop',      onDrop);
   li.addEventListener('dragend',   onDragEnd);
 
-  // drag handle
-  var handle = document.createElement('span');
-  handle.className = 'drag-handle';
-  handle.innerHTML = '&#8942;&#8942;';
-  handle.addEventListener('mousedown', function(e) { e.stopPropagation(); });
-  li.appendChild(handle);
+  var handle = document.createElement('span'); handle.className='drag-handle'; handle.innerHTML='&#8942;&#8942;';
+  handle.addEventListener('mousedown', function(e){e.stopPropagation();}); li.appendChild(handle);
 
-  // checkbox
-  var check = document.createElement('button');
-  check.className = 'check';
-  check.setAttribute('aria-label', todo.done ? 'Mark incomplete' : 'Mark complete');
-  check.innerHTML = '<svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="' + todo.color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5 5 4 8 8.5 2"/></svg>';
-  // override stroke for done state (use bg color for check on amber bg)
-  if (todo.done) check.querySelector('svg').setAttribute('stroke', '#141414');
-  check.addEventListener('click', function() { toggleTodo(todo.id); });
-  li.appendChild(check);
+  var check = document.createElement('button'); check.className='check';
+  check.innerHTML = '<svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5 5 4 8 8.5 2"/></svg>';
+  check.addEventListener('click', function(e){e.stopPropagation(); toggleTodo(todo.id);}); li.appendChild(check);
 
-  // accent bar
-  var bar = document.createElement('div');
-  bar.className = 'accent-bar';
-  bar.style.background = todo.color;
-  li.appendChild(bar);
+  var bar = document.createElement('div'); bar.className='accent-bar'; bar.style.background=todo.color; li.appendChild(bar);
 
-  // text
-  var text = document.createElement('span');
-  text.className = 'todo-text';
-  text.textContent = todo.text;
-  text.addEventListener('click', function(e) { e.stopPropagation(); openDetail(todo); });
-  li.appendChild(text);
+  var text = document.createElement('span'); text.className='todo-text'; text.textContent=todo.text; li.appendChild(text);
 
-  // due badge
   if (todo.due && !todo.done) {
     var badge = document.createElement('span');
     var today = new Date(); today.setHours(0,0,0,0);
     var dueDate = new Date(todo.due + 'T00:00:00');
     var diff = Math.round((dueDate - today) / 86400000);
     badge.className = 'due-badge ' + (diff < 0 ? 'overdue' : diff === 0 ? 'today' : 'upcoming');
-    badge.textContent = diff < 0 ? 'Overdue ' + todo.due : diff === 0 ? 'Today' : todo.due;
+    badge.textContent = diff < 0 ? 'Overdue' : diff === 0 ? 'Today' : todo.due;
     li.appendChild(badge);
   }
 
-  // index
-  var num = document.createElement('span');
-  num.className = 'todo-idx';
-  num.textContent = String(idx + 1).padStart(2, '0');
-  li.appendChild(num);
+  var num = document.createElement('span'); num.className='todo-idx'; num.textContent=String(idx+1).padStart(2,'0'); li.appendChild(num);
 
-  // delete
-  var del = document.createElement('button');
-  del.className = 'del-btn';
-  del.innerHTML = '×';
-  del.setAttribute('aria-label', 'Delete');
-  del.addEventListener('click', function() { removeTodo(todo.id); });
-  li.appendChild(del);
+  var del = document.createElement('button'); del.className='del-btn'; del.innerHTML='×';
+  del.addEventListener('click', function(e){e.stopPropagation(); removeTodo(todo.id);}); li.appendChild(del);
 
   return li;
 }
 
-// ── INIT ──────────────────────────────────────────────────────────
-
-// ── DRAG TO REORDER ───────────────────────────────────────────────
-var dragSrcId = null;
-function onDragStart(e) {
-  dragSrcId = this.dataset.id;
-  this.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-}
-function onDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  this.classList.add('drag-over');
-}
-function onDragLeave() { this.classList.remove('drag-over'); }
-function onDragEnd() {
-  document.querySelectorAll('.todo-item').forEach(function(el) {
-    el.classList.remove('dragging'); el.classList.remove('drag-over');
-  });
-}
-function onDrop(e) {
-  e.stopPropagation();
-  this.classList.remove('drag-over');
-  var targetId = this.dataset.id;
-  if (!dragSrcId || dragSrcId === targetId) return;
-  var arr = todos();
-  var srcIdx = arr.findIndex(function(t) { return String(t.id) === String(dragSrcId); });
-  var tgtIdx = arr.findIndex(function(t) { return String(t.id) === String(targetId); });
-  if (srcIdx < 0 || tgtIdx < 0) return;
-  var moved = arr.splice(srcIdx, 1)[0];
-  arr.splice(tgtIdx, 0, moved);
-  setTodos(arr);
-  lsave(); schedulePush(); render();
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  lload();
-
-  // sync status
-  if (S.url) {
-    dot('busy', 'connecting…');
-    pullPages().then(function() { return pull(); }).then(function() { render(); });
-  } else {
-    dot('', 'not connected');
-  }
-
-  renderPages();
-  render();
-
-  // add input
-  var addInput = document.getElementById('add-input');
-  var addBtn   = document.getElementById('add-btn');
-  addInput.addEventListener('input', function() { addBtn.disabled = !addInput.value.trim(); });
-  addInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') addTodo(); });
-  addBtn.addEventListener('click', addTodo);
-
-  // filter tabs
-  document.querySelectorAll('.f-tab').forEach(function(tab) {
-    tab.addEventListener('click', function() { S.filter = tab.dataset.f; render(); });
-  });
-
-  // modal keyboard
-  document.getElementById('modal-input').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') confirmPage();
-    if (e.key === 'Escape') closeModal();
-  });
-  document.getElementById('modal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
-
-  // url input enter key
-  document.getElementById('url-input').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') saveUrl();
-  });
-});
-
 // ── DETAIL PANEL ─────────────────────────────────────────────────
 var detailTodo = null;
-
-function openDetail(todo) {
-  detailTodo = todo;
-  renderDetailBody();
-  document.getElementById('detail-panel').classList.add('open');
-  document.getElementById('detail-overlay').classList.add('open');
-}
+function openDetail(todo) { detailTodo = todo; renderDetailBody(); document.getElementById('detail-panel').classList.add('open'); document.getElementById('detail-overlay').classList.add('open'); }
+function closeDetail()    { document.getElementById('detail-panel').classList.remove('open'); document.getElementById('detail-overlay').classList.remove('open'); detailTodo = null; }
 
 function renderDetailBody() {
-  var todo = detailTodo;
-  var body = document.getElementById('detail-body');
-
+  var todo = detailTodo, body = document.getElementById('detail-body');
   var html = '<div class="detail-task">' + escHtml(todo.text) + '</div>';
-
-  if (todo.due) {
-    html += '<div class="detail-field">'
-      + '<div class="detail-field-label">Due date</div>'
-      + '<div class="detail-field-value highlight">' + escHtml(todo.due) + '</div>'
-      + '</div>';
-  }
-  if (todo.sender) {
-    html += '<div class="detail-field">'
-      + '<div class="detail-field-label">From</div>'
-      + '<div class="detail-field-value highlight">' + escHtml(todo.sender) + '</div>'
-      + '</div>';
-  }
-  if (todo.subject) {
-    html += '<div class="detail-field">'
-      + '<div class="detail-field-label">Subject</div>'
-      + '<div class="detail-field-value">' + escHtml(todo.subject) + '</div>'
-      + '</div>';
-  }
-  if (todo.snippet) {
-    html += '<div class="detail-field">'
-      + '<div class="detail-field-label">Summary</div>'
-      + '<div class="detail-field-value" id="detail-snippet"></div>'
-      + '</div>';
-  }
-  if (!todo.sender && !todo.subject && !todo.snippet && !todo.due) {
-    html += '<div class="detail-no-info">No email reference for this task.</div>';
-  }
-
+  if (todo.due)     html += field('Due date', escHtml(todo.due), true);
+  if (todo.sender)  html += field('From', escHtml(todo.sender), true);
+  if (todo.subject) html += field('Subject', escHtml(todo.subject), false);
+  if (todo.snippet) html += '<div class="detail-field"><div class="detail-field-label">Summary</div><div class="detail-field-value" id="detail-snippet"></div></div>';
+  if (!todo.due && !todo.sender && !todo.subject && !todo.snippet) html += '<div class="detail-no-info">No email reference for this task.</div>';
   body.innerHTML = html;
-  if (todo.snippet && document.getElementById('detail-snippet')) {
-    document.getElementById('detail-snippet').textContent = todo.snippet;
-  }
+  if (todo.snippet && document.getElementById('detail-snippet')) document.getElementById('detail-snippet').textContent = todo.snippet;
+}
+function field(label, val, highlight) {
+  return '<div class="detail-field"><div class="detail-field-label">' + label + '</div><div class="detail-field-value' + (highlight?' highlight':'') + '">' + val + '</div></div>';
 }
 
-function closeDetail() {
-  document.getElementById('detail-panel').classList.remove('open');
-  document.getElementById('detail-overlay').classList.remove('open');
-  detailTodo = null;
-}
-
-// ── EDIT ──────────────────────────────────────────────────────────
 function startEdit() {
   if (!detailTodo) return;
-  var body = document.getElementById('detail-body');
-  body.innerHTML = '<div class="detail-edit-wrap">'
-    + '<div class="detail-field-label" style="margin-bottom:0.4rem;">Task</div>'
+  document.getElementById('detail-body').innerHTML =
+    '<div class="detail-field-label" style="margin-bottom:0.4rem;">Task</div>'
     + '<textarea class="detail-edit-input" id="edit-text-input">' + escHtml(detailTodo.text) + '</textarea>'
     + '<div class="detail-field-label" style="margin:0.75rem 0 0.3rem;">Due date</div>'
     + '<input class="detail-due-input" id="edit-due-input" type="date" value="' + (detailTodo.due||'') + '">'
-    + '<button class="detail-save-btn" onclick="saveEdit()">Save changes</button>'
-    + '</div>';
+    + '<button class="detail-save-btn" onclick="saveEdit()">Save changes</button>';
 }
-
 function saveEdit() {
   if (!detailTodo) return;
   var newText = document.getElementById('edit-text-input').value.trim();
   var newDue  = document.getElementById('edit-due-input').value;
   if (!newText) return;
-  setTodos(todos().map(function(t) {
-    return t.id === detailTodo.id
-      ? Object.assign({}, t, { text: newText, due: newDue })
-      : t;
-  }));
-  detailTodo = Object.assign({}, detailTodo, { text: newText, due: newDue });
-  lsave(); schedulePush(); render();
-  renderDetailBody();
+  setTodos(todos().map(function(t) { return t.id === detailTodo.id ? Object.assign({},t,{text:newText,due:newDue}) : t; }));
+  detailTodo = Object.assign({}, detailTodo, {text:newText, due:newDue});
+  lsave(); schedulePush(); render(); renderDetailBody();
 }
-
-// ── MOVE TO PAGE ──────────────────────────────────────────────────
 function showMove() {
   if (!detailTodo) return;
-  var body = document.getElementById('detail-body');
-  var html = '<div class="detail-field-label" style="margin-bottom:0.5rem;">Move to page</div>'
-    + '<div class="move-page-list">';
+  var html = '<div class="detail-field-label" style="margin-bottom:0.5rem;">Move to page</div><div class="move-page-list">';
   S.pages.forEach(function(p) {
-    var isCurrent = p === S.page;
-    html += '<button class="move-page-btn' + (isCurrent ? ' current' : '') + '"'
-      + (isCurrent ? '' : ' onclick="moveToPage('' + escHtml(p) + '')"') + '>'
-      + escHtml(p) + (isCurrent ? ' — current' : '') + '</button>';
+    var cur = p === S.page;
+    html += '<button class="move-page-btn' + (cur?' current':'') + '"' + (cur?'':' onclick="moveToPage(\'' + p + '\')"') + '>' + escHtml(p) + (cur?' — current':'') + '</button>';
   });
-  html += '</div>';
-  body.innerHTML = html;
+  document.getElementById('detail-body').innerHTML = html + '</div>';
 }
-
 function moveToPage(targetPage) {
   if (!detailTodo || targetPage === S.page) return;
-  // Remove from current page
   var task = detailTodo;
   setTodos(todos().filter(function(t) { return t.id !== task.id; }));
-  // Add to target page
   if (!S.data[targetPage]) S.data[targetPage] = [];
   S.data[targetPage].push(task);
-  lsave(); schedulePush(); render();
-  closeDetail();
+  lsave(); schedulePush(); render(); closeDetail();
 }
-
-// ── DELETE FROM DETAIL ────────────────────────────────────────────
 function deleteFromDetail() {
   if (!detailTodo) return;
   if (!confirm('Delete this task?')) return;
-  removeTodo(detailTodo.id);
-  closeDetail();
+  removeTodo(detailTodo.id); closeDetail();
 }
+function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
-}
-
-</script>
-
-<!-- DETAIL SLIDE PANEL -->
-<div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
-<div class="detail-panel" id="detail-panel">
-  <div class="detail-header">
-    <div class="detail-title">Task detail</div>
-    <button class="detail-close" onclick="closeDetail()">×</button>
-  </div>
-  <div class="detail-body" id="detail-body"></div>
-  <div class="detail-actions">
-    <button class="detail-act" onclick="startEdit()">Edit</button>
-    <button class="detail-act" onclick="showMove()">Move</button>
-    <button class="detail-act danger" onclick="deleteFromDetail()">Delete</button>
-  </div>
-</div>
-
-</body>
-</html>
-}
-.sync-status {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 0.25rem 0;
-  transition: color 0.2s;
-  user-select: none;
-}
-.sync-status:hover { color: var(--text); }
-.sync-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--muted);
-  flex-shrink: 0;
-  transition: background 0.4s;
-}
-.sync-dot.ok   { background: var(--green); }
-.sync-dot.err  { background: var(--red); }
-.sync-dot.busy { background: var(--amber); animation: throb 1s ease-in-out infinite; }
-@keyframes throb { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-/* ── PAGES ── */
-.pages-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.pages-wrap::-webkit-scrollbar { display: none; }
-.page-tab {
-  font-family: 'Fira Code', monospace;
-  font-size: 0.65rem;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 1rem 1.1rem 0.85rem;
-  white-space: nowrap;
-  position: relative;
-  transition: color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.page-tab::after {
-  content: '';
-  position: absolute;
-  bottom: -1px; left: 0; right: 0;
-  height: 1px;
-  background: var(--amber);
-  transform: scaleX(0);
-  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-  transform-origin: left;
-}
-.page-tab:hover { color: var(--text); }
-.page-tab.active { color: var(--amber); }
-.page-tab.active::after { transform: scaleX(1); }
-.tab-count {
-  font-size: 0.55rem;
-  color: var(--faint);
-  transition: color 0.2s;
-}
-.page-tab.active .tab-count { color: var(--amber); opacity: 0.6; }
-.page-tab-del {
-  font-size: 0.7rem;
-  color: var(--faint);
-  opacity: 0;
-  transition: all 0.15s;
-  line-height: 1;
-}
-.page-tab:hover .page-tab-del { opacity: 1; }
-.page-tab-del:hover { color: var(--red); }
-.page-tab-add {
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
-  color: var(--faint);
-  padding: 1rem 1rem 0.85rem;
-  flex-shrink: 0;
-  transition: color 0.2s;
-}
-.page-tab-add:hover { color: var(--amber); }
-
-/* ── SCRIPT URL BANNER ── */
-.url-banner {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-top: none;
-  padding: 0.85rem 1rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-.url-input {
-  flex: 1;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  color: var(--text);
-  font-family: 'Fira Code', monospace;
-  font-size: 0.7rem;
-  font-weight: 300;
-  padding: 0.45rem 0.75rem;
-  outline: none;
-  transition: border-color 0.2s;
-  border-radius: 2px;
-}
-.url-input:focus { border-color: var(--amber); }
-.url-input::placeholder { color: var(--muted); }
-.url-save-btn {
-  background: var(--amber);
-  color: var(--bg);
-  font-family: 'Fira Code', monospace;
-  font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  padding: 0.45rem 0.85rem;
-  border-radius: 2px;
-  white-space: nowrap;
-  transition: opacity 0.15s;
-}
-.url-save-btn:hover { opacity: 0.8; }
-.url-dismiss {
-  font-size: 0.7rem;
-  color: var(--muted);
-  padding: 0.45rem 0.5rem;
-  transition: color 0.15s;
-  flex-shrink: 0;
-}
-.url-dismiss:hover { color: var(--text); }
-
-/* ── ADD INPUT ── */
-.add-row {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
-}
-.add-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--text);
-  font-family: 'Cormorant Garant', serif;
-  font-size: 1.15rem;
-  font-weight: 300;
-  font-style: italic;
-  padding: 1rem 0;
-  outline: none;
-}
-.add-input::placeholder {
-  color: var(--faint);
-}
-.add-btn {
-  font-family: 'Fira Code', monospace;
-  font-size: 0.6rem;
-  font-weight: 500;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 0 0 0 1rem;
-  transition: color 0.2s;
-  flex-shrink: 0;
-}
-.add-btn:not(:disabled):hover { color: var(--amber); }
-.add-btn:disabled { opacity: 0.25; cursor: not-allowed; }
-
-/* ── FILTERS ── */
-.filter-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 0 0.25rem;
-}
-.filter-tabs { display: flex; gap: 0; }
-.f-tab {
-  font-size: 0.6rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 0.25rem 0.7rem 0.25rem 0;
-  transition: color 0.2s;
-  margin-right: 0.5rem;
-}
-.f-tab:hover { color: var(--text); }
-.f-tab.active { color: var(--amber); }
-.clear-done-btn {
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--faint);
-  transition: color 0.2s;
-}
-.clear-done-btn:hover { color: var(--red); }
-
-/* ── LIST ── */
-.todo-list { list-style: none; }
-.todo-item {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 0.7rem 0;
-  border-bottom: 1px solid var(--border);
-  transition: background 0.15s;
-  animation: slideIn 0.2s ease both;
-}
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-6px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-.todo-item:hover { background: var(--amber-bg); margin: 0 -0.5rem; padding-left: 0.5rem; padding-right: 0.5rem; }
-
-.check {
-  width: 15px; height: 15px;
-  border: 1px solid var(--border2);
-  border-radius: 2px;
-  flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
-  background: transparent;
-}
-.check:hover { border-color: var(--amber); }
-.todo-item.done .check {
-  background: var(--amber);
-  border-color: var(--amber);
-}
-.check svg { display: none; }
-.todo-item.done .check svg { display: block; }
-
-.accent-bar {
-  width: 2px;
-  height: 1rem;
-  border-radius: 1px;
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-.todo-item.done .accent-bar { opacity: 0.15; }
-
-.todo-text {
-  flex: 1;
-  font-family: 'Cormorant Garant', serif;
-  font-size: 1.05rem;
-  font-weight: 400;
-  color: var(--text);
-  line-height: 1.3;
-  word-break: break-word;
-}
-.todo-item.done .todo-text {
-  text-decoration: line-through;
-  color: var(--muted);
-  text-decoration-color: var(--faint);
-}
-
-.todo-idx {
-  font-size: 0.55rem;
-  color: var(--faint);
-  letter-spacing: 0.05em;
-  flex-shrink: 0;
-  min-width: 1.5rem;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.del-btn {
-  color: var(--faint);
-  font-size: 1rem;
-  width: 1.25rem;
-  height: 1.25rem;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  opacity: 0;
-  transition: all 0.15s;
-}
-.todo-item:hover .del-btn { opacity: 1; }
-.del-btn:hover { color: var(--red); }
-
-/* ── EMPTY ── */
-.empty {
-  padding: 4rem 0;
-  text-align: center;
-  font-family: 'Cormorant Garant', serif;
-  font-size: 1.1rem;
-  font-style: italic;
-  color: var(--faint);
-}
-
-/* ── PROGRESS ── */
-.progress-wrap {
-  margin-top: 2rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--border);
-}
-.progress-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.58rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.6rem;
-}
-.progress-track {
-  height: 2px;
-  background: var(--border);
-  position: relative;
-  overflow: visible;
-}
-.progress-fill {
-  position: absolute;
-  top: 0; bottom: 0; left: 0;
-  background: var(--amber);
-  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
-}
-.progress-fill::after {
-  content: '';
-  position: absolute;
-  right: -1px; top: -2px;
-  width: 5px; height: 5px;
-  background: var(--amber);
-  border-radius: 50%;
-}
-
-/* ── MODAL ── */
-.modal-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(4px);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  padding: 2rem;
-  width: 360px;
-  animation: popIn 0.2s ease both;
-}
-@keyframes popIn {
-  from { opacity:0; transform:scale(0.96); }
-  to   { opacity:1; transform:scale(1); }
-}
-.modal-title {
-  font-family: 'Cormorant Garant', serif;
-  font-size: 1.4rem;
-  font-weight: 300;
-  color: var(--text);
-  margin-bottom: 0.2rem;
-}
-.modal-sub {
-  font-size: 0.62rem;
-  color: var(--muted);
-  letter-spacing: 0.1em;
-  margin-bottom: 1.25rem;
-}
-.modal-input {
-  width: 100%;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  color: var(--text);
-  font-family: 'Cormorant Garant', serif;
-  font-size: 1rem;
-  font-style: italic;
-  padding: 0.6rem 0.8rem;
-  outline: none;
-  margin-bottom: 1rem;
-  transition: border-color 0.2s;
-  border-radius: 2px;
-}
-.modal-input:focus { border-color: var(--amber); }
-.modal-input::placeholder { color: var(--muted); font-style: italic; }
-.modal-btns { display: flex; justify-content: flex-end; gap: 0.5rem; }
-.modal-cancel {
-  font-size: 0.65rem; letter-spacing: 0.1em;
-  color: var(--muted); padding: 0.5rem 0.8rem;
-  border: 1px solid var(--border2); border-radius: 2px;
-  transition: all 0.15s;
-}
-.modal-cancel:hover { color: var(--text); border-color: var(--muted); }
-.modal-confirm {
-  font-size: 0.65rem; letter-spacing: 0.1em;
-  background: var(--amber); color: var(--bg);
-  padding: 0.5rem 1rem; border-radius: 2px;
-  font-weight: 500; transition: opacity 0.15s;
-}
-.modal-confirm:hover { opacity: 0.85; }
-
-/* ── DETAIL PANEL ── */
-.detail-panel {
-  position: fixed;
-  top: 0; right: 0; bottom: 0;
-  width: 320px;
-  background: #1c1c1c;
-  border-left: 1px solid #383838;
-  z-index: 300;
-  transform: translateX(100%);
-  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.detail-panel.open { transform: translateX(0); }
-.detail-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 299;
-  backdrop-filter: blur(2px);
-}
-.detail-overlay.open { display: block; }
-.detail-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.25rem 1rem;
-  border-bottom: 1px solid #383838;
-  flex-shrink: 0;
-}
-.detail-title {
-  font-family: 'Fira Code', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #a8a8a8;
-}
-.detail-close {
-  color: #686868;
-  font-size: 1.2rem;
-  line-height: 1;
-  transition: color 0.15s;
-  padding: 0.2rem;
-}
-.detail-close:hover { color: #ffffff; }
-.detail-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.25rem;
-}
-.detail-task {
-  font-family: 'Cormorant Garant', serif;
-  font-size: 1.25rem;
-  font-weight: 400;
-  color: #ffffff;
-  line-height: 1.35;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid #383838;
-}
-.detail-field { margin-bottom: 1.1rem; }
-.detail-field-label {
-  font-family: 'Fira Code', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #686868;
-  margin-bottom: 0.3rem;
-}
-.detail-field-value {
-  font-size: 0.82rem;
-  color: #a8a8a8;
-  line-height: 1.6;
-  word-break: break-word;
-  white-space: pre-wrap;
-}
-.detail-field-value.highlight { color: #ffd700; }
-.detail-no-info {
-  font-family: 'Cormorant Garant', serif;
-  font-style: italic;
-  font-size: 0.95rem;
-  color: #686868;
-  text-align: center;
-  margin-top: 2rem;
-}
-.todo-item { cursor: pointer; }
-
-/* ── DUE DATE ── */
-.due-badge {
-  font-family: 'Fira Code', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.08em;
-  padding: 0.15rem 0.4rem;
-  border-radius: 2px;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-.due-badge.overdue  { background: rgba(192,68,42,0.2); color: #e06048; border: 1px solid rgba(192,68,42,0.3); }
-.due-badge.today    { background: rgba(255,215,0,0.15); color: #ffd700; border: 1px solid rgba(255,215,0,0.3); }
-.due-badge.upcoming { background: rgba(74,140,92,0.15); color: #6ab880; border: 1px solid rgba(74,140,92,0.3); }
-
-/* ── DRAG HANDLE ── */
-.drag-handle {
-  color: #686868; font-size: 0.85rem; cursor: grab;
-  flex-shrink: 0; opacity: 0; transition: opacity 0.15s;
-  user-select: none; line-height: 1; padding: 0 0.1rem;
-}
-.todo-item:hover .drag-handle { opacity: 1; }
-.todo-item.dragging { opacity: 0.35; }
-.todo-item.drag-over { border-top: 2px solid var(--amber); }
-
-/* ── DETAIL PANEL ACTIONS ── */
-.detail-actions {
-  display: flex; gap: 0.5rem;
-  padding: 1rem 1.25rem;
-  border-top: 1px solid #383838;
-  flex-shrink: 0;
-}
-.detail-act {
-  flex: 1; font-family: 'Fira Code', monospace;
-  font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
-  padding: 0.5rem; border: 1px solid #383838; border-radius: 2px;
-  color: #a8a8a8; transition: all 0.15s; text-align: center;
-}
-.detail-act:hover { border-color: var(--amber); color: var(--amber); }
-.detail-act.danger:hover { border-color: var(--red); color: var(--red); }
-
-/* ── EDIT MODE ── */
-.detail-edit-wrap { margin-bottom: 1rem; }
-.detail-edit-input {
-  width: 100%; background: #222; border: 1px solid var(--amber);
-  color: #fff; font-family: 'Cormorant Garant', serif;
-  font-size: 1.05rem; padding: 0.5rem 0.6rem; outline: none;
-  border-radius: 2px; resize: vertical; min-height: 56px;
-}
-.detail-due-input {
-  width: 100%; background: #222; border: 1px solid #484848;
-  color: #fff; font-family: 'Fira Code', monospace;
-  font-size: 0.8rem; padding: 0.45rem 0.6rem; outline: none;
-  border-radius: 2px; margin-top: 0.5rem;
-}
-.detail-due-input:focus { border-color: var(--amber); }
-.detail-save-btn {
-  width: 100%; margin-top: 0.6rem;
-  background: var(--amber); color: #141414;
-  font-family: 'Fira Code', monospace; font-size: 0.65rem;
-  font-weight: 500; letter-spacing: 0.12em; padding: 0.55rem;
-  border-radius: 2px; transition: opacity 0.15s;
-}
-.detail-save-btn:hover { opacity: 0.85; }
-
-/* ── MOVE PAGE ── */
-.move-page-list { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.5rem; }
-.move-page-btn {
-  font-family: 'Fira Code', monospace; font-size: 0.65rem;
-  letter-spacing: 0.1em; padding: 0.45rem 0.75rem;
-  border: 1px solid #383838; border-radius: 2px;
-  color: #a8a8a8; text-align: left; transition: all 0.15s;
-}
-.move-page-btn:hover { border-color: var(--amber); color: var(--amber); }
-.move-page-btn.current { color: #686868; cursor: default; font-style: italic; }
-.move-page-btn.current:hover { border-color: #383838; color: #686868; }
-</style>
-</head>
-<body>
-<div class="app">
-
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-row">
-      <div>
-        <div class="wordmark"><span>M</span><em>List</em></div>
-        <div class="tagline">Task manager</div>
-      </div>
-      <div class="sync-status" id="sync-status" onclick="toggleUrlBanner()">
-        <span class="sync-dot" id="sync-dot"></span>
-        <span id="sync-label">not connected</span>
-      </div>
-    </div>
-  </header>
-
-  <!-- PAGES TABS -->
-  <nav class="pages-wrap" id="pages-wrap"></nav>
-
-  <!-- URL BANNER (hidden by default) -->
-  <div class="url-banner" id="url-banner" style="display:none;">
-    <input class="url-input" id="url-input" type="url" placeholder="Paste Apps Script URL…  (see MList_AppScript.gs for setup)">
-    <button class="url-save-btn" onclick="saveUrl()">Connect</button>
-    <button class="url-dismiss" onclick="toggleUrlBanner()" title="Close">✕</button>
-  </div>
-
-  <!-- ADD TASK -->
-  <div class="add-row">
-    <input class="add-input" id="add-input" type="text" placeholder="Add a task…" autocomplete="off">
-    <button class="add-btn" id="add-btn" disabled>+ add</button>
-  </div>
-
-  <!-- FILTER BAR -->
-  <div class="filter-bar" id="filter-bar" style="display:none;">
-    <div class="filter-tabs">
-      <button class="f-tab active" data-f="all">All <span id="c-all">0</span></button>
-      <button class="f-tab" data-f="open">Open <span id="c-open">0</span></button>
-      <button class="f-tab" data-f="done">Done <span id="c-done">0</span></button>
-    </div>
-    <button class="clear-done-btn" id="clear-done-btn" style="display:none" onclick="clearDone()">Clear done</button>
-  </div>
-
-  <!-- LIST -->
-  <ul class="todo-list" id="todo-list"></ul>
-  <div class="empty" id="empty">Nothing here yet.</div>
-
-  <!-- PROGRESS -->
-  <div class="progress-wrap" id="progress-wrap" style="display:none;">
-    <div class="progress-meta">
-      <span>Progress</span>
-      <span id="progress-label">0 / 0</span>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- NEW PAGE MODAL -->
-<div class="modal-overlay" id="modal">
-  <div class="modal">
-    <div class="modal-title">New page</div>
-    <div class="modal-sub">Name this list — e.g. Work, Errands, Projects</div>
-    <input class="modal-input" id="modal-input" type="text" placeholder="Page name…">
-    <div class="modal-btns">
-      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
-      <button class="modal-confirm" onclick="confirmPage()">Create</button>
-    </div>
-  </div>
-</div>
-
-<script>
-'use strict';
-
-// ── CONFIG ────────────────────────────────────────────────────────
-// After deploying MList_AppScript.gs, paste your Web App URL here:
-var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxGsOWPZ120y5OAC378Qrx1wPj2KxS-5kVdUABlqJqbCdyxH2cLHeRGhoD82tQxwGSO/exec';
-
-var ACCENTS = [
-  '#ffd700','#5b8fa8','#7a9e6e','#b06060','#8f79b8',
-  '#ffe44d','#5a9e8f','#a87070','#7070a8','#9ea85a'
-];
-
-// ── STATE ─────────────────────────────────────────────────────────
-var S = {
-  pages: ['Main', 'Work'],
-  page: 'Main',
-  data: {},        // { pageName: [todo…] }
-  filter: 'all',
-  url: SCRIPT_URL
-};
-
-function todos()        { return S.data[S.page] || []; }
-function setTodos(arr)  { S.data[S.page] = arr; }
-function rndAccent()    { return ACCENTS[Math.floor(Math.random() * ACCENTS.length)]; }
-
-// ── LOCAL STORAGE ─────────────────────────────────────────────────
-var LS_KEY = 'mlist_3';
-function lsave() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch(e) {}
-}
-function lload() {
-  try {
-    var r = localStorage.getItem(LS_KEY);
-    if (r) {
-      var parsed = JSON.parse(r);
-      S.pages  = parsed.pages  || S.pages;
-      S.data   = parsed.data   || {};
-      S.page   = parsed.page   || S.pages[0];
-      S.filter = parsed.filter || 'all';
-      S.url    = parsed.url    || SCRIPT_URL;
-    }
-  } catch(e) {}
-}
-
-// ── SYNC ──────────────────────────────────────────────────────────
-var syncTimer = null;
-function dot(cls, lbl) {
-  document.getElementById('sync-dot').className = 'sync-dot ' + (cls||'');
-  document.getElementById('sync-label').textContent = lbl;
-}
-function schedulePush() {
-  if (!S.url) return;
-  clearTimeout(syncTimer);
-  syncTimer = setTimeout(push, 1500);
-}
-async function push() {
-  if (!S.url) return;
-  dot('busy', 'saving…');
-  try {
-    // Use 'update' action — sends only id/text/done/color (no snippets)
-    // AppScript preserves existing sender/subject/snippet from the sheet
-    var slim = todos().map(function(t) {
-      return { id: t.id, text: t.text, done: t.done, color: t.color, due: t.due||'' };
-    });
-    var url = S.url + '?action=update&page=' + enc(S.page) + '&todos=' + enc(JSON.stringify(slim));
-    var r = await fetch(url);
-    var d = await r.json();
-    dot(d.ok ? 'ok' : 'err', d.ok ? 'synced' : 'error');
-  } catch(e) { dot('err', 'offline'); }
-}
-async function pull(page) {
-  if (!S.url) return;
-  dot('busy', 'loading…');
-  try {
-    var r = await fetch(S.url + '?action=load&page=' + enc(page || S.page));
-    var d = await r.json();
-    if (d.ok) { S.data[page || S.page] = d.todos || []; lsave(); dot('ok', 'synced'); }
-    else throw 0;
-  } catch(e) { dot('err', 'offline'); }
-}
-async function pullPages() {
-  if (!S.url) return;
-  try {
-    var r = await fetch(S.url + '?action=pages');
-    var d = await r.json();
-    if (d.ok) {
-      d.pages.forEach(function(p) { if (!S.pages.includes(p)) S.pages.push(p); });
-      lsave(); renderPages();
-    }
-  } catch(e) {}
-}
-function enc(s) { return encodeURIComponent(s); }
-
-// ── URL BANNER ────────────────────────────────────────────────────
-function toggleUrlBanner() {
-  var b = document.getElementById('url-banner');
-  var shown = b.style.display !== 'none';
-  b.style.display = shown ? 'none' : 'flex';
-  if (!shown) {
-    document.getElementById('url-input').value = S.url;
-    setTimeout(function() { document.getElementById('url-input').focus(); }, 50);
-  }
-}
-async function saveUrl() {
-  var v = document.getElementById('url-input').value.trim();
-  if (!v || !v.startsWith('https://')) { alert('Please enter a valid https:// URL.'); return; }
-  S.url = v; lsave();
-  document.getElementById('url-banner').style.display = 'none';
+// ── INIT ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  lload();
+  renderPages(); render();
   dot('busy', 'connecting…');
-  await pullPages();
-  await pull();
-  render();
-}
+  pullPages().then(function() { return pull(); }).then(function() { render(); });
 
-// ── PAGES ─────────────────────────────────────────────────────────
-function renderPages() {
-  var wrap = document.getElementById('pages-wrap');
-  wrap.innerHTML = '';
-  S.pages.forEach(function(p) {
-    var btn = document.createElement('button');
-    btn.className = 'page-tab' + (p === S.page ? ' active' : '');
-
-    var count = (S.data[p] || []).filter(function(t) { return !t.done; }).length;
-
-    var nameSpan = document.createElement('span');
-    nameSpan.textContent = p;
-    btn.appendChild(nameSpan);
-
-    var countSpan = document.createElement('span');
-    countSpan.className = 'tab-count';
-    countSpan.textContent = count > 0 ? count : '';
-    btn.appendChild(countSpan);
-
-    if (S.pages.length > 1) {
-      var del = document.createElement('button');
-      del.className = 'page-tab-del';
-      del.textContent = '×';
-      del.title = 'Delete page';
-      del.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (confirm('Delete page "' + p + '"? All its tasks will be lost.')) deletePage(p);
-      });
-      btn.appendChild(del);
-    }
-
-    btn.addEventListener('click', function() { switchPage(p); });
-    wrap.appendChild(btn);
-  });
-
-  var addBtn = document.createElement('button');
-  addBtn.className = 'page-tab-add';
-  addBtn.textContent = '+ page';
-  addBtn.addEventListener('click', openModal);
-  wrap.appendChild(addBtn);
-}
-
-async function switchPage(p) {
-  S.page = p; S.filter = 'all'; lsave();
-  renderPages();
-  if (S.url) await pull(p);
-  render();
-}
-
-function deletePage(p) {
-  S.pages = S.pages.filter(function(x) { return x !== p; });
-  delete S.data[p];
-  if (S.page === p) S.page = S.pages[0];
-  lsave(); renderPages(); render();
-}
-
-function openModal() {
-  document.getElementById('modal').classList.add('open');
-  setTimeout(function() { document.getElementById('modal-input').focus(); }, 50);
-}
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-  document.getElementById('modal-input').value = '';
-}
-function confirmPage() {
-  var name = document.getElementById('modal-input').value.trim();
-  if (!name) return;
-  if (S.pages.includes(name)) { alert('A page with that name already exists.'); return; }
-  S.pages.push(name); lsave();
-  closeModal(); switchPage(name);
-}
-
-// ── TODOS ─────────────────────────────────────────────────────────
-function addTodo() {
-  var inp = document.getElementById('add-input');
-  var text = inp.value.trim(); if (!text) return;
-  todos().push({ id: Date.now(), text: text, done: false, color: rndAccent() });
-  inp.value = ''; document.getElementById('add-btn').disabled = true;
-  lsave(); schedulePush(); render();
-}
-function toggleTodo(id) {
-  setTodos(todos().map(function(t) {
-    return t.id === id ? Object.assign({}, t, { done: !t.done }) : t;
-  }));
-  lsave(); schedulePush(); render();
-}
-function removeTodo(id) {
-  setTodos(todos().filter(function(t) { return t.id !== id; }));
-  lsave(); schedulePush(); render();
-}
-function clearDone() {
-  setTodos(todos().filter(function(t) { return !t.done; }));
-  lsave(); schedulePush(); render();
-}
-
-// ── RENDER ────────────────────────────────────────────────────────
-function render() {
-  var all  = todos();
-  var done = all.filter(function(t) { return  t.done; });
-  var open = all.filter(function(t) { return !t.done; });
-
-  // counts
-  document.getElementById('c-all').textContent  = all.length;
-  document.getElementById('c-open').textContent = open.length;
-  document.getElementById('c-done').textContent = done.length;
-
-  // filter bar
-  document.getElementById('filter-bar').style.display = all.length ? 'flex' : 'none';
-  document.querySelectorAll('.f-tab').forEach(function(t) {
-    t.classList.toggle('active', t.dataset.f === S.filter);
-  });
-  document.getElementById('clear-done-btn').style.display = done.length ? '' : 'none';
-
-  // visible items
-  var vis = S.filter === 'done' ? done : S.filter === 'open' ? open : all;
-
-  var listEl  = document.getElementById('todo-list');
-  var emptyEl = document.getElementById('empty');
-  listEl.innerHTML = '';
-
-  if (!vis.length) {
-    emptyEl.style.display = '';
-    emptyEl.textContent = all.length ? 'Nothing here.' : 'Nothing here yet.';
-  } else {
-    emptyEl.style.display = 'none';
-    vis.forEach(function(t, i) { listEl.appendChild(buildItem(t, i)); });
-  }
-
-  // progress
-  var pw = document.getElementById('progress-wrap');
-  if (all.length > 0) {
-    pw.style.display = '';
-    var pct = Math.round(done.length / all.length * 100);
-    var pct2 = Math.round(done.length / all.length * 100);
-    document.getElementById('progress-label').textContent = done.length + ' / ' + all.length + '  (' + pct2 + '%)';
-    document.getElementById('progress-fill').style.width = pct + '%';
-  } else {
-    pw.style.display = 'none';
-  }
-
-  // update tab counts
-  renderPages();
-}
-
-function buildItem(todo, idx) {
-  var li = document.createElement('li');
-  li.className = 'todo-item' + (todo.done ? ' done' : '');
-  li.setAttribute('draggable', 'true');
-  li.dataset.id = todo.id;
-  li.addEventListener('click', function() { openDetail(todo); });
-  li.addEventListener('dragstart', onDragStart);
-  li.addEventListener('dragover',  onDragOver);
-  li.addEventListener('dragleave', onDragLeave);
-  li.addEventListener('drop',      onDrop);
-  li.addEventListener('dragend',   onDragEnd);
-
-  // drag handle
-  var handle = document.createElement('span');
-  handle.className = 'drag-handle';
-  handle.innerHTML = '&#8942;&#8942;';
-  handle.addEventListener('mousedown', function(e) { e.stopPropagation(); });
-  li.appendChild(handle);
-
-  // checkbox
-  var check = document.createElement('button');
-  check.className = 'check';
-  check.setAttribute('aria-label', todo.done ? 'Mark incomplete' : 'Mark complete');
-  check.innerHTML = '<svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="' + todo.color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5 5 4 8 8.5 2"/></svg>';
-  // override stroke for done state (use bg color for check on amber bg)
-  if (todo.done) check.querySelector('svg').setAttribute('stroke', '#141414');
-  check.addEventListener('click', function() { toggleTodo(todo.id); });
-  li.appendChild(check);
-
-  // accent bar
-  var bar = document.createElement('div');
-  bar.className = 'accent-bar';
-  bar.style.background = todo.color;
-  li.appendChild(bar);
-
-  // text
-  var text = document.createElement('span');
-  text.className = 'todo-text';
-  text.textContent = todo.text;
-  text.addEventListener('click', function(e) { e.stopPropagation(); openDetail(todo); });
-  li.appendChild(text);
-
-  // due badge
-  if (todo.due && !todo.done) {
-    var badge = document.createElement('span');
-    var today = new Date(); today.setHours(0,0,0,0);
-    var dueDate = new Date(todo.due + 'T00:00:00');
-    var diff = Math.round((dueDate - today) / 86400000);
-    badge.className = 'due-badge ' + (diff < 0 ? 'overdue' : diff === 0 ? 'today' : 'upcoming');
-    badge.textContent = diff < 0 ? 'Overdue ' + todo.due : diff === 0 ? 'Today' : todo.due;
-    li.appendChild(badge);
-  }
-
-  // index
-  var num = document.createElement('span');
-  num.className = 'todo-idx';
-  num.textContent = String(idx + 1).padStart(2, '0');
-  li.appendChild(num);
-
-  // delete
-  var del = document.createElement('button');
-  del.className = 'del-btn';
-  del.innerHTML = '×';
-  del.setAttribute('aria-label', 'Delete');
-  del.addEventListener('click', function() { removeTodo(todo.id); });
-  li.appendChild(del);
-
-  return li;
-}
-
-// ── INIT ──────────────────────────────────────────────────────────
-
-// ── DRAG TO REORDER ───────────────────────────────────────────────
-var dragSrcId = null;
-function onDragStart(e) {
-  dragSrcId = this.dataset.id;
-  this.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-}
-function onDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  this.classList.add('drag-over');
-}
-function onDragLeave() { this.classList.remove('drag-over'); }
-function onDragEnd() {
-  document.querySelectorAll('.todo-item').forEach(function(el) {
-    el.classList.remove('dragging'); el.classList.remove('drag-over');
-  });
-}
-function onDrop(e) {
-  e.stopPropagation();
-  this.classList.remove('drag-over');
-  var targetId = this.dataset.id;
-  if (!dragSrcId || dragSrcId === targetId) return;
-  var arr = todos();
-  var srcIdx = arr.findIndex(function(t) { return String(t.id) === String(dragSrcId); });
-  var tgtIdx = arr.findIndex(function(t) { return String(t.id) === String(targetId); });
-  if (srcIdx < 0 || tgtIdx < 0) return;
-  var moved = arr.splice(srcIdx, 1)[0];
-  arr.splice(tgtIdx, 0, moved);
-  setTodos(arr);
-  lsave(); schedulePush(); render();
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  lload();
-
-  // sync status
-  if (S.url) {
-    dot('busy', 'connecting…');
-    pullPages().then(function() { return pull(); }).then(function() { render(); });
-  } else {
-    dot('', 'not connected');
-  }
-
-  renderPages();
-  render();
-
-  // add input
-  var addInput = document.getElementById('add-input');
-  var addBtn   = document.getElementById('add-btn');
+  var addInput = document.getElementById('add-input'), addBtn = document.getElementById('add-btn');
   addInput.addEventListener('input', function() { addBtn.disabled = !addInput.value.trim(); });
-  addInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') addTodo(); });
+  addInput.addEventListener('keydown', function(e) { if (e.key==='Enter') addTodo(); });
   addBtn.addEventListener('click', addTodo);
-
-  // filter tabs
-  document.querySelectorAll('.f-tab').forEach(function(tab) {
-    tab.addEventListener('click', function() { S.filter = tab.dataset.f; render(); });
-  });
-
-  // modal keyboard
-  document.getElementById('modal-input').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') confirmPage();
-    if (e.key === 'Escape') closeModal();
-  });
-  document.getElementById('modal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
-
-  // url input enter key
-  document.getElementById('url-input').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') saveUrl();
-  });
+  document.querySelectorAll('.f-tab').forEach(function(tab) { tab.addEventListener('click', function() { S.filter=tab.dataset.f; render(); }); });
+  document.getElementById('modal-input').addEventListener('keydown', function(e) { if(e.key==='Enter') confirmPage(); if(e.key==='Escape') closeModal(); });
+  document.getElementById('modal').addEventListener('click', function(e) { if(e.target===this) closeModal(); });
+  document.getElementById('url-input').addEventListener('keydown', function(e) { if(e.key==='Enter') saveUrl(); });
 });
-
-// ── DETAIL PANEL ─────────────────────────────────────────────────
-var detailTodo = null;
-
-function openDetail(todo) {
-  detailTodo = todo;
-  renderDetailBody();
-  document.getElementById('detail-panel').classList.add('open');
-  document.getElementById('detail-overlay').classList.add('open');
-}
-
-function renderDetailBody() {
-  var todo = detailTodo;
-  var body = document.getElementById('detail-body');
-
-  var html = '<div class="detail-task">' + escHtml(todo.text) + '</div>';
-
-  if (todo.due) {
-    html += '<div class="detail-field">'
-      + '<div class="detail-field-label">Due date</div>'
-      + '<div class="detail-field-value highlight">' + escHtml(todo.due) + '</div>'
-      + '</div>';
-  }
-  if (todo.sender) {
-    html += '<div class="detail-field">'
-      + '<div class="detail-field-label">From</div>'
-      + '<div class="detail-field-value highlight">' + escHtml(todo.sender) + '</div>'
-      + '</div>';
-  }
-  if (todo.subject) {
-    html += '<div class="detail-field">'
-      + '<div class="detail-field-label">Subject</div>'
-      + '<div class="detail-field-value">' + escHtml(todo.subject) + '</div>'
-      + '</div>';
-  }
-  if (todo.snippet) {
-    html += '<div class="detail-field">'
-      + '<div class="detail-field-label">Summary</div>'
-      + '<div class="detail-field-value" id="detail-snippet"></div>'
-      + '</div>';
-  }
-  if (!todo.sender && !todo.subject && !todo.snippet && !todo.due) {
-    html += '<div class="detail-no-info">No email reference for this task.</div>';
-  }
-
-  body.innerHTML = html;
-  if (todo.snippet && document.getElementById('detail-snippet')) {
-    document.getElementById('detail-snippet').textContent = todo.snippet;
-  }
-}
-
-function closeDetail() {
-  document.getElementById('detail-panel').classList.remove('open');
-  document.getElementById('detail-overlay').classList.remove('open');
-  detailTodo = null;
-}
-
-// ── EDIT ──────────────────────────────────────────────────────────
-function startEdit() {
-  if (!detailTodo) return;
-  var body = document.getElementById('detail-body');
-  body.innerHTML = '<div class="detail-edit-wrap">'
-    + '<div class="detail-field-label" style="margin-bottom:0.4rem;">Task</div>'
-    + '<textarea class="detail-edit-input" id="edit-text-input">' + escHtml(detailTodo.text) + '</textarea>'
-    + '<div class="detail-field-label" style="margin:0.75rem 0 0.3rem;">Due date</div>'
-    + '<input class="detail-due-input" id="edit-due-input" type="date" value="' + (detailTodo.due||'') + '">'
-    + '<button class="detail-save-btn" onclick="saveEdit()">Save changes</button>'
-    + '</div>';
-}
-
-function saveEdit() {
-  if (!detailTodo) return;
-  var newText = document.getElementById('edit-text-input').value.trim();
-  var newDue  = document.getElementById('edit-due-input').value;
-  if (!newText) return;
-  setTodos(todos().map(function(t) {
-    return t.id === detailTodo.id
-      ? Object.assign({}, t, { text: newText, due: newDue })
-      : t;
-  }));
-  detailTodo = Object.assign({}, detailTodo, { text: newText, due: newDue });
-  lsave(); schedulePush(); render();
-  renderDetailBody();
-}
-
-// ── MOVE TO PAGE ──────────────────────────────────────────────────
-function showMove() {
-  if (!detailTodo) return;
-  var body = document.getElementById('detail-body');
-  var html = '<div class="detail-field-label" style="margin-bottom:0.5rem;">Move to page</div>'
-    + '<div class="move-page-list">';
-  S.pages.forEach(function(p) {
-    var isCurrent = p === S.page;
-    html += '<button class="move-page-btn' + (isCurrent ? ' current' : '') + '"'
-      + (isCurrent ? '' : ' onclick="moveToPage('' + escHtml(p) + '')"') + '>'
-      + escHtml(p) + (isCurrent ? ' — current' : '') + '</button>';
-  });
-  html += '</div>';
-  body.innerHTML = html;
-}
-
-function moveToPage(targetPage) {
-  if (!detailTodo || targetPage === S.page) return;
-  // Remove from current page
-  var task = detailTodo;
-  setTodos(todos().filter(function(t) { return t.id !== task.id; }));
-  // Add to target page
-  if (!S.data[targetPage]) S.data[targetPage] = [];
-  S.data[targetPage].push(task);
-  lsave(); schedulePush(); render();
-  closeDetail();
-}
-
-// ── DELETE FROM DETAIL ────────────────────────────────────────────
-function deleteFromDetail() {
-  if (!detailTodo) return;
-  if (!confirm('Delete this task?')) return;
-  removeTodo(detailTodo.id);
-  closeDetail();
-}
-
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
-}
-
 </script>
-
-<!-- DETAIL SLIDE PANEL -->
-<div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
-<div class="detail-panel" id="detail-panel">
-  <div class="detail-header">
-    <div class="detail-title">Task detail</div>
-    <button class="detail-close" onclick="closeDetail()">×</button>
-  </div>
-  <div class="detail-body" id="detail-body"></div>
-  <div class="detail-actions">
-    <button class="detail-act" onclick="startEdit()">Edit</button>
-    <button class="detail-act" onclick="showMove()">Move</button>
-    <button class="detail-act danger" onclick="deleteFromDetail()">Delete</button>
-  </div>
-</div>
-
 </body>
 </html>
