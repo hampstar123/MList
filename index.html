@@ -559,6 +559,82 @@ body {
   margin-top: 2rem;
 }
 .todo-item { cursor: pointer; }
+
+/* ── DUE DATE ── */
+.due-badge {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.4rem;
+  border-radius: 2px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.due-badge.overdue  { background: rgba(192,68,42,0.2); color: #e06048; border: 1px solid rgba(192,68,42,0.3); }
+.due-badge.today    { background: rgba(255,215,0,0.15); color: #ffd700; border: 1px solid rgba(255,215,0,0.3); }
+.due-badge.upcoming { background: rgba(74,140,92,0.15); color: #6ab880; border: 1px solid rgba(74,140,92,0.3); }
+
+/* ── DRAG HANDLE ── */
+.drag-handle {
+  color: #686868; font-size: 0.85rem; cursor: grab;
+  flex-shrink: 0; opacity: 0; transition: opacity 0.15s;
+  user-select: none; line-height: 1; padding: 0 0.1rem;
+}
+.todo-item:hover .drag-handle { opacity: 1; }
+.todo-item.dragging { opacity: 0.35; }
+.todo-item.drag-over { border-top: 2px solid var(--amber); }
+
+/* ── DETAIL PANEL ACTIONS ── */
+.detail-actions {
+  display: flex; gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #383838;
+  flex-shrink: 0;
+}
+.detail-act {
+  flex: 1; font-family: 'Fira Code', monospace;
+  font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.5rem; border: 1px solid #383838; border-radius: 2px;
+  color: #a8a8a8; transition: all 0.15s; text-align: center;
+}
+.detail-act:hover { border-color: var(--amber); color: var(--amber); }
+.detail-act.danger:hover { border-color: var(--red); color: var(--red); }
+
+/* ── EDIT MODE ── */
+.detail-edit-wrap { margin-bottom: 1rem; }
+.detail-edit-input {
+  width: 100%; background: #222; border: 1px solid var(--amber);
+  color: #fff; font-family: 'Cormorant Garant', serif;
+  font-size: 1.05rem; padding: 0.5rem 0.6rem; outline: none;
+  border-radius: 2px; resize: vertical; min-height: 56px;
+}
+.detail-due-input {
+  width: 100%; background: #222; border: 1px solid #484848;
+  color: #fff; font-family: 'Fira Code', monospace;
+  font-size: 0.8rem; padding: 0.45rem 0.6rem; outline: none;
+  border-radius: 2px; margin-top: 0.5rem;
+}
+.detail-due-input:focus { border-color: var(--amber); }
+.detail-save-btn {
+  width: 100%; margin-top: 0.6rem;
+  background: var(--amber); color: #141414;
+  font-family: 'Fira Code', monospace; font-size: 0.65rem;
+  font-weight: 500; letter-spacing: 0.12em; padding: 0.55rem;
+  border-radius: 2px; transition: opacity 0.15s;
+}
+.detail-save-btn:hover { opacity: 0.85; }
+
+/* ── MOVE PAGE ── */
+.move-page-list { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.5rem; }
+.move-page-btn {
+  font-family: 'Fira Code', monospace; font-size: 0.65rem;
+  letter-spacing: 0.1em; padding: 0.45rem 0.75rem;
+  border: 1px solid #383838; border-radius: 2px;
+  color: #a8a8a8; text-align: left; transition: all 0.15s;
+}
+.move-page-btn:hover { border-color: var(--amber); color: var(--amber); }
+.move-page-btn.current { color: #686868; cursor: default; font-style: italic; }
+.move-page-btn.current:hover { border-color: #383838; color: #686868; }
 </style>
 </head>
 <body>
@@ -693,11 +769,13 @@ async function push() {
   if (!S.url) return;
   dot('busy', 'saving…');
   try {
-    var r = await fetch(S.url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'save', page: S.page, todos: todos() })
+    // Use 'update' action — sends only id/text/done/color (no snippets)
+    // AppScript preserves existing sender/subject/snippet from the sheet
+    var slim = todos().map(function(t) {
+      return { id: t.id, text: t.text, done: t.done, color: t.color, due: t.due||'' };
     });
+    var url = S.url + '?action=update&page=' + enc(S.page) + '&todos=' + enc(JSON.stringify(slim));
+    var r = await fetch(url);
     var d = await r.json();
     dot(d.ok ? 'ok' : 'err', d.ok ? 'synced' : 'error');
   } catch(e) { dot('err', 'offline'); }
@@ -893,7 +971,21 @@ function render() {
 function buildItem(todo, idx) {
   var li = document.createElement('li');
   li.className = 'todo-item' + (todo.done ? ' done' : '');
+  li.setAttribute('draggable', 'true');
+  li.dataset.id = todo.id;
   li.addEventListener('click', function() { openDetail(todo); });
+  li.addEventListener('dragstart', onDragStart);
+  li.addEventListener('dragover',  onDragOver);
+  li.addEventListener('dragleave', onDragLeave);
+  li.addEventListener('drop',      onDrop);
+  li.addEventListener('dragend',   onDragEnd);
+
+  // drag handle
+  var handle = document.createElement('span');
+  handle.className = 'drag-handle';
+  handle.innerHTML = '&#8942;&#8942;';
+  handle.addEventListener('mousedown', function(e) { e.stopPropagation(); });
+  li.appendChild(handle);
 
   // checkbox
   var check = document.createElement('button');
@@ -918,6 +1010,17 @@ function buildItem(todo, idx) {
   text.addEventListener('click', function(e) { e.stopPropagation(); openDetail(todo); });
   li.appendChild(text);
 
+  // due badge
+  if (todo.due && !todo.done) {
+    var badge = document.createElement('span');
+    var today = new Date(); today.setHours(0,0,0,0);
+    var dueDate = new Date(todo.due + 'T00:00:00');
+    var diff = Math.round((dueDate - today) / 86400000);
+    badge.className = 'due-badge ' + (diff < 0 ? 'overdue' : diff === 0 ? 'today' : 'upcoming');
+    badge.textContent = diff < 0 ? 'Overdue ' + todo.due : diff === 0 ? 'Today' : todo.due;
+    li.appendChild(badge);
+  }
+
   // index
   var num = document.createElement('span');
   num.className = 'todo-idx';
@@ -936,6 +1039,40 @@ function buildItem(todo, idx) {
 }
 
 // ── INIT ──────────────────────────────────────────────────────────
+
+// ── DRAG TO REORDER ───────────────────────────────────────────────
+var dragSrcId = null;
+function onDragStart(e) {
+  dragSrcId = this.dataset.id;
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  this.classList.add('drag-over');
+}
+function onDragLeave() { this.classList.remove('drag-over'); }
+function onDragEnd() {
+  document.querySelectorAll('.todo-item').forEach(function(el) {
+    el.classList.remove('dragging'); el.classList.remove('drag-over');
+  });
+}
+function onDrop(e) {
+  e.stopPropagation();
+  this.classList.remove('drag-over');
+  var targetId = this.dataset.id;
+  if (!dragSrcId || dragSrcId === targetId) return;
+  var arr = todos();
+  var srcIdx = arr.findIndex(function(t) { return String(t.id) === String(dragSrcId); });
+  var tgtIdx = arr.findIndex(function(t) { return String(t.id) === String(targetId); });
+  if (srcIdx < 0 || tgtIdx < 0) return;
+  var moved = arr.splice(srcIdx, 1)[0];
+  arr.splice(tgtIdx, 0, moved);
+  setTodos(arr);
+  lsave(); schedulePush(); render();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   lload();
 
@@ -978,32 +1115,46 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── DETAIL PANEL ─────────────────────────────────────────────────
+var detailTodo = null;
+
 function openDetail(todo) {
+  detailTodo = todo;
+  renderDetailBody();
+  document.getElementById('detail-panel').classList.add('open');
+  document.getElementById('detail-overlay').classList.add('open');
+}
+
+function renderDetailBody() {
+  var todo = detailTodo;
   var body = document.getElementById('detail-body');
-  var hasInfo = todo.sender || todo.subject || todo.snippet;
 
   var html = '<div class="detail-task">' + escHtml(todo.text) + '</div>';
 
-  if (hasInfo) {
-    if (todo.sender) {
-      html += '<div class="detail-field">'
-        + '<div class="detail-field-label">From</div>'
-        + '<div class="detail-field-value highlight">' + escHtml(todo.sender) + '</div>'
-        + '</div>';
-    }
-    if (todo.subject) {
-      html += '<div class="detail-field">'
-        + '<div class="detail-field-label">Subject</div>'
-        + '<div class="detail-field-value">' + escHtml(todo.subject) + '</div>'
-        + '</div>';
-    }
-    if (todo.snippet) {
-      html += '<div class="detail-field">'
-        + '<div class="detail-field-label">Email</div>'
-        + '<div class="detail-field-value" id="detail-snippet"></div>'
-        + '</div>';
-    }
-  } else {
+  if (todo.due) {
+    html += '<div class="detail-field">'
+      + '<div class="detail-field-label">Due date</div>'
+      + '<div class="detail-field-value highlight">' + escHtml(todo.due) + '</div>'
+      + '</div>';
+  }
+  if (todo.sender) {
+    html += '<div class="detail-field">'
+      + '<div class="detail-field-label">From</div>'
+      + '<div class="detail-field-value highlight">' + escHtml(todo.sender) + '</div>'
+      + '</div>';
+  }
+  if (todo.subject) {
+    html += '<div class="detail-field">'
+      + '<div class="detail-field-label">Subject</div>'
+      + '<div class="detail-field-value">' + escHtml(todo.subject) + '</div>'
+      + '</div>';
+  }
+  if (todo.snippet) {
+    html += '<div class="detail-field">'
+      + '<div class="detail-field-label">Summary</div>'
+      + '<div class="detail-field-value" id="detail-snippet"></div>'
+      + '</div>';
+  }
+  if (!todo.sender && !todo.subject && !todo.snippet && !todo.due) {
     html += '<div class="detail-no-info">No email reference for this task.</div>';
   }
 
@@ -1011,13 +1162,76 @@ function openDetail(todo) {
   if (todo.snippet && document.getElementById('detail-snippet')) {
     document.getElementById('detail-snippet').textContent = todo.snippet;
   }
-  document.getElementById('detail-panel').classList.add('open');
-  document.getElementById('detail-overlay').classList.add('open');
 }
 
 function closeDetail() {
   document.getElementById('detail-panel').classList.remove('open');
   document.getElementById('detail-overlay').classList.remove('open');
+  detailTodo = null;
+}
+
+// ── EDIT ──────────────────────────────────────────────────────────
+function startEdit() {
+  if (!detailTodo) return;
+  var body = document.getElementById('detail-body');
+  body.innerHTML = '<div class="detail-edit-wrap">'
+    + '<div class="detail-field-label" style="margin-bottom:0.4rem;">Task</div>'
+    + '<textarea class="detail-edit-input" id="edit-text-input">' + escHtml(detailTodo.text) + '</textarea>'
+    + '<div class="detail-field-label" style="margin:0.75rem 0 0.3rem;">Due date</div>'
+    + '<input class="detail-due-input" id="edit-due-input" type="date" value="' + (detailTodo.due||'') + '">'
+    + '<button class="detail-save-btn" onclick="saveEdit()">Save changes</button>'
+    + '</div>';
+}
+
+function saveEdit() {
+  if (!detailTodo) return;
+  var newText = document.getElementById('edit-text-input').value.trim();
+  var newDue  = document.getElementById('edit-due-input').value;
+  if (!newText) return;
+  setTodos(todos().map(function(t) {
+    return t.id === detailTodo.id
+      ? Object.assign({}, t, { text: newText, due: newDue })
+      : t;
+  }));
+  detailTodo = Object.assign({}, detailTodo, { text: newText, due: newDue });
+  lsave(); schedulePush(); render();
+  renderDetailBody();
+}
+
+// ── MOVE TO PAGE ──────────────────────────────────────────────────
+function showMove() {
+  if (!detailTodo) return;
+  var body = document.getElementById('detail-body');
+  var html = '<div class="detail-field-label" style="margin-bottom:0.5rem;">Move to page</div>'
+    + '<div class="move-page-list">';
+  S.pages.forEach(function(p) {
+    var isCurrent = p === S.page;
+    html += '<button class="move-page-btn' + (isCurrent ? ' current' : '') + '"'
+      + (isCurrent ? '' : ' onclick="moveToPage('' + escHtml(p) + '')"') + '>'
+      + escHtml(p) + (isCurrent ? ' — current' : '') + '</button>';
+  });
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+function moveToPage(targetPage) {
+  if (!detailTodo || targetPage === S.page) return;
+  // Remove from current page
+  var task = detailTodo;
+  setTodos(todos().filter(function(t) { return t.id !== task.id; }));
+  // Add to target page
+  if (!S.data[targetPage]) S.data[targetPage] = [];
+  S.data[targetPage].push(task);
+  lsave(); schedulePush(); render();
+  closeDetail();
+}
+
+// ── DELETE FROM DETAIL ────────────────────────────────────────────
+function deleteFromDetail() {
+  if (!detailTodo) return;
+  if (!confirm('Delete this task?')) return;
+  removeTodo(detailTodo.id);
+  closeDetail();
 }
 
 function escHtml(str) {
@@ -1038,6 +1252,11 @@ function escHtml(str) {
     <button class="detail-close" onclick="closeDetail()">×</button>
   </div>
   <div class="detail-body" id="detail-body"></div>
+  <div class="detail-actions">
+    <button class="detail-act" onclick="startEdit()">Edit</button>
+    <button class="detail-act" onclick="showMove()">Move</button>
+    <button class="detail-act danger" onclick="deleteFromDetail()">Delete</button>
+  </div>
 </div>
 
 </body>
