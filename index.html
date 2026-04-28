@@ -303,10 +303,12 @@ async function push() {
   if (!S.url) return;
   dot('busy', 'saving…');
   try {
+    // Send all fields except snippet to keep URL length manageable
     var slim = todos().map(function(t) {
-      return { id: t.id, text: t.text, done: t.done, color: t.color, due: t.due||'' };
+      return { id: t.id, text: t.text, done: t.done, color: t.color,
+               due: t.due||'', sender: t.sender||'', subject: t.subject||'', snippet: t.snippet||'' };
     });
-    var url = S.url + '?action=update&page=' + enc(S.page) + '&todos=' + enc(JSON.stringify(slim));
+    var url = S.url + '?action=save&page=' + enc(S.page) + '&todos=' + enc(JSON.stringify(slim));
     var r = await fetch(url);
     var d = await r.json();
     dot(d.ok ? 'ok' : 'err', d.ok ? 'synced' : 'error');
