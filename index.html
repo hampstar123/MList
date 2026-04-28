@@ -545,8 +545,9 @@ body {
 .detail-field-value {
   font-size: 0.82rem;
   color: #a8a8a8;
-  line-height: 1.5;
+  line-height: 1.6;
   word-break: break-word;
+  white-space: pre-wrap;
 }
 .detail-field-value.highlight { color: #ffd700; }
 .detail-no-info {
@@ -998,8 +999,8 @@ function openDetail(todo) {
     }
     if (todo.snippet) {
       html += '<div class="detail-field">'
-        + '<div class="detail-field-label">Snippet</div>'
-        + '<div class="detail-field-value">' + escHtml(todo.snippet) + '</div>'
+        + '<div class="detail-field-label">Email</div>'
+        + '<div class="detail-field-value" id="detail-snippet"></div>'
         + '</div>';
     }
   } else {
@@ -1007,6 +1008,9 @@ function openDetail(todo) {
   }
 
   body.innerHTML = html;
+  if (todo.snippet && document.getElementById('detail-snippet')) {
+    document.getElementById('detail-snippet').textContent = todo.snippet;
+  }
   document.getElementById('detail-panel').classList.add('open');
   document.getElementById('detail-overlay').classList.add('open');
 }
